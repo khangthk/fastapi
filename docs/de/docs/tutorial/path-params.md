@@ -1,54 +1,50 @@
-# Pfad-Parameter
+# Pfad-Parameter { #path-parameters }
 
-Sie können Pfad-„Parameter“ oder -„Variablen“ mit der gleichen Syntax deklarieren, welche in Python-<abbr title="Format-String – Formatierter String: Der String enthält Variablen, die mit geschweiften Klammern umschlossen sind. Solche Stellen werden durch den Wert der Variable ersetzt">Format-Strings</abbr> verwendet wird:
+Sie können Pfad-„Parameter“ oder -„Variablen“ mit der gleichen Syntax deklarieren, welche in Python-<abbr title="Formatstring – Formatierter String: Der String enthält Ausdrücke, die mit geschweiften Klammern umschlossen sind. Solche Stellen werden durch den Wert des Ausdrucks ersetzt">Formatstrings</abbr> verwendet wird:
 
-```Python hl_lines="6-7"
-{!../../../docs_src/path_params/tutorial001.py!}
-```
+{* ../../docs_src/path_params/tutorial001_py310.py hl[6:7] *}
 
 Der Wert des Pfad-Parameters `item_id` wird Ihrer Funktion als das Argument `item_id` übergeben.
 
-Wenn Sie dieses Beispiel ausführen und auf <a href="http://127.0.0.1:8000/items/foo" class="external-link" target="_blank">http://127.0.0.1:8000/items/foo</a> gehen, sehen Sie als Response:
+Wenn Sie also dieses Beispiel ausführen und auf [http://127.0.0.1:8000/items/foo](http://127.0.0.1:8000/items/foo) gehen, sehen Sie als <abbr title="Response – Antwort: Daten, die der Server zum anfragenden Client zurücksendet">Response</abbr>:
 
 ```JSON
 {"item_id":"foo"}
 ```
 
-## Pfad-Parameter mit Typen
+## Pfad-Parameter mit Typen { #path-parameters-with-types }
 
-Sie können den Typ eines Pfad-Parameters in der Argumentliste der Funktion deklarieren, mit Standard-Python-Typannotationen:
+Sie können den Typ eines Pfad-Parameters in der Funktion deklarieren, mit Standard-Python-Typannotationen:
 
-```Python hl_lines="7"
-{!../../../docs_src/path_params/tutorial002.py!}
-```
+{* ../../docs_src/path_params/tutorial002_py310.py hl[7] *}
 
-In diesem Fall wird `item_id` als `int` deklariert, also als Ganzzahl.
+In diesem Fall wird `item_id` als `int` deklariert.
 
-/// check
+/// tip | Tipp
 
 Dadurch erhalten Sie Editor-Unterstützung innerhalb Ihrer Funktion, mit Fehlerprüfungen, Codevervollständigung, usw.
 
 ///
 
-## Daten-<abbr title="Auch bekannt als: Serialisierung, Parsen, Marshalling">Konversion</abbr>
+## Daten-<dfn title="auch bekannt als: Serialisierung, Parsen, Marshalling">Konversion</dfn> { #data-conversion }
 
-Wenn Sie dieses Beispiel ausführen und Ihren Browser unter <a href="http://127.0.0.1:8000/items/3" class="external-link" target="_blank">http://127.0.0.1:8000/items/3</a> öffnen, sehen Sie als Response:
+Wenn Sie dieses Beispiel ausführen und Ihren Browser unter [http://127.0.0.1:8000/items/3](http://127.0.0.1:8000/items/3) öffnen, sehen Sie als Response:
 
 ```JSON
 {"item_id":3}
 ```
 
-/// check
+/// tip | Tipp
 
-Beachten Sie, dass der Wert, den Ihre Funktion erhält und zurückgibt, die Zahl `3` ist, also ein `int`. Nicht der String `"3"`, also ein `str`.
+Beachten Sie, dass der Wert, den Ihre Funktion erhalten (und zurückgegeben) hat, `3` ist, als Python-`int`, nicht als String `"3"`.
 
-Sprich, mit dieser Typdeklaration wird **FastAPI** die Anfrage automatisch <abbr title="Den String, der von einer HTTP Anfrage kommt, in Python-Objekte konvertieren">„parsen“</abbr>.
+Sprich, mit dieser Typdeklaration bietet **FastAPI** Ihnen automatisches Request-<dfn title="Den String, der von einem HTTP-Request kommt, in Python-Daten konvertieren">„Parsing“</dfn>.
 
 ///
 
-## Datenvalidierung
+## Datenvalidierung { #data-validation }
 
-Wenn Sie aber im Browser <a href="http://127.0.0.1:8000/items/foo" class="external-link" target="_blank">http://127.0.0.1:8000/items/foo</a> besuchen, erhalten Sie eine hübsche HTTP-Fehlermeldung:
+Wenn Sie aber im Browser [http://127.0.0.1:8000/items/foo](http://127.0.0.1:8000/items/foo) besuchen, erhalten Sie eine hübsche HTTP-Fehlermeldung:
 
 ```JSON
 {
@@ -60,162 +56,141 @@ Wenn Sie aber im Browser <a href="http://127.0.0.1:8000/items/foo" class="extern
         "item_id"
       ],
       "msg": "Input should be a valid integer, unable to parse string as an integer",
-      "input": "foo",
-      "url": "https://errors.pydantic.dev/2.1/v/int_parsing"
+      "input": "foo"
     }
   ]
 }
 ```
 
-Der Pfad-Parameter `item_id` hatte den Wert `"foo"`, was kein `int` ist.
+denn der Pfad-Parameter `item_id` hatte den Wert `"foo"`, was kein `int` ist.
 
-Die gleiche Fehlermeldung würde angezeigt werden, wenn Sie ein `float` (also eine Kommazahl) statt eines `int`s übergeben würden, wie etwa in: <a href="http://127.0.0.1:8000/items/4.2" class="external-link" target="_blank">http://127.0.0.1:8000/items/4.2</a>
+Die gleiche Fehlermeldung würde angezeigt werden, wenn Sie ein `float` statt eines `int`s übergeben würden, wie etwa in: [http://127.0.0.1:8000/items/4.2](http://127.0.0.1:8000/items/4.2)
 
-/// check
+/// tip | Tipp
 
 Sprich, mit der gleichen Python-Typdeklaration gibt Ihnen **FastAPI** Datenvalidierung.
 
 Beachten Sie, dass die Fehlermeldung auch direkt die Stelle anzeigt, wo die Validierung nicht erfolgreich war.
 
-Das ist unglaublich hilfreich, wenn Sie Code entwickeln und debuggen, welcher mit ihrer API interagiert.
+Das ist unglaublich hilfreich, wenn Sie Code entwickeln und debuggen, welcher mit Ihrer API interagiert.
 
 ///
 
-## Dokumentation
+## Dokumentation { #documentation }
 
-Wenn Sie die Seite <a href="http://127.0.0.1:8000/docs" class="external-link" target="_blank">http://127.0.0.1:8000/docs</a> in Ihrem Browser öffnen, sehen Sie eine automatische, interaktive API-Dokumentation:
+Und wenn Sie die Seite [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) in Ihrem Browser öffnen, sehen Sie eine automatische, interaktive API-Dokumentation wie:
 
 <img src="/img/tutorial/path-params/image01.png">
 
-/// check
+/// tip | Tipp
 
-Wiederum, mit dieser gleichen Python-Typdeklaration gibt Ihnen **FastAPI** eine automatische, interaktive Dokumentation (verwendet die Swagger-Benutzeroberfläche).
+Wiederum, nur mit dieser gleichen Python-Typdeklaration gibt Ihnen **FastAPI** eine automatische, interaktive Dokumentation (integriert Swagger UI).
 
 Beachten Sie, dass der Pfad-Parameter dort als Ganzzahl deklariert ist.
 
 ///
 
-## Nützliche Standards. Alternative Dokumentation
+## Standardbasierte Vorteile, alternative Dokumentation { #standards-based-benefits-alternative-documentation }
 
-Und weil das generierte Schema vom <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.1.0.md" class="external-link" target="_blank">OpenAPI</a>-Standard kommt, gibt es viele kompatible Tools.
+Und weil das generierte Schema vom [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md)-Standard kommt, gibt es viele kompatible Tools.
 
-Zum Beispiel bietet **FastAPI** selbst eine alternative API-Dokumentation (verwendet ReDoc), welche Sie unter <a href="http://127.0.0.1:8000/redoc" class="external-link" target="_blank">http://127.0.0.1:8000/redoc</a> einsehen können:
+Aus diesem Grund bietet **FastAPI** selbst eine alternative API-Dokumentation (verwendet ReDoc), welche Sie unter [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc) einsehen können:
 
 <img src="/img/tutorial/path-params/image02.png">
 
-Und viele weitere kompatible Tools. Inklusive Codegenerierung für viele Sprachen.
+Auf die gleiche Weise gibt es viele kompatible Tools. Inklusive Codegenerierungstools für viele Sprachen.
 
-## Pydantic
+## Pydantic { #pydantic }
 
-Die ganze Datenvalidierung wird hinter den Kulissen von <a href="https://pydantic-docs.helpmanual.io/" class="external-link" target="_blank">Pydantic</a> durchgeführt, Sie profitieren also von dessen Vorteilen. Und Sie wissen, dass Sie in guten Händen sind.
+Die ganze Datenvalidierung wird hinter den Kulissen von [Pydantic](https://pydantic.dev/docs/) durchgeführt, Sie profitieren also von dessen Vorteilen. Und Sie wissen, dass Sie in guten Händen sind.
 
-Sie können für Typ Deklarationen auch `str`, `float`, `bool` und viele andere komplexe Datentypen verwenden.
+Sie können die gleichen Typdeklarationen auch mit `str`, `float`, `bool` und vielen anderen komplexen Datentypen verwenden.
 
-Mehrere davon werden wir in den nächsten Kapiteln erkunden.
+Mehrere davon werden in den nächsten Kapiteln des Tutorials erkundet.
 
-## Die Reihenfolge ist wichtig
+## Die Reihenfolge ist wichtig { #order-matters }
 
-Wenn Sie *Pfadoperationen* erstellen, haben Sie manchmal einen fixen Pfad.
+Wenn Sie *Pfadoperationen* erstellen, haben Sie manchmal Situationen, in denen Sie einen fixen Pfad haben.
 
-Etwa `/users/me`, um Daten über den aktuellen Benutzer zu erhalten.
+Etwa `/users/me`, sagen wir, um Daten über den aktuellen Benutzer zu erhalten.
 
-Und Sie haben auch einen Pfad `/users/{user_id}`, um Daten über einen spezifischen Benutzer zu erhalten, mittels einer Benutzer-ID.
+Und Sie können auch einen Pfad `/users/{user_id}` haben, um Daten über einen spezifischen Benutzer mittels irgendeiner Benutzer-ID zu erhalten.
 
-Weil *Pfadoperationen* in ihrer Reihenfolge ausgewertet werden, müssen Sie sicherstellen, dass der Pfad `/users/me` vor `/users/{user_id}` deklariert wurde:
+Weil *Pfadoperationen* in ihrer Reihenfolge ausgewertet werden, müssen Sie sicherstellen, dass der Pfad für `/users/me` vor dem für `/users/{user_id}` deklariert wurde:
 
-```Python hl_lines="6  11"
-{!../../../docs_src/path_params/tutorial003.py!}
-```
+{* ../../docs_src/path_params/tutorial003_py310.py hl[6,11] *}
 
-Ansonsten würde der Pfad für `/users/{user_id}` auch `/users/me` auswerten, und annehmen, dass ein Parameter `user_id` mit dem Wert `"me"` übergeben wurde.
+Ansonsten würde der Pfad für `/users/{user_id}` auch auf `/users/me` passen und „denken“, dass er einen Parameter `user_id` mit dem Wert `"me"` erhält.
 
-Sie können eine Pfadoperation auch nicht erneut definieren:
+Ebenso können Sie eine Pfadoperation nicht erneut definieren:
 
-```Python hl_lines="6  11"
-{!../../../docs_src/path_params/tutorial003b.py!}
-```
+{* ../../docs_src/path_params/tutorial003b_py310.py hl[6,11] *}
 
 Die erste Definition wird immer verwendet werden, da ihr Pfad zuerst übereinstimmt.
 
-## Vordefinierte Parameterwerte
+## Vordefinierte Werte { #predefined-values }
 
-Wenn Sie eine *Pfadoperation* haben, welche einen *Pfad-Parameter* hat, aber Sie wollen, dass dessen gültige Werte vordefiniert sind, können Sie ein Standard-Python <abbr title="Enumeration, oder kurz Enum – Aufzählung">`Enum`</abbr> verwenden.
+Wenn Sie eine *Pfadoperation* haben, welche einen *Pfad-Parameter* erhält, aber Sie wollen, dass die möglichen gültigen *Pfad-Parameter*-Werte vordefiniert sind, können Sie ein Standard-Python-<abbr title="Enumeration">`Enum`</abbr> verwenden.
 
-### Erstellen Sie eine `Enum`-Klasse
+### Eine `Enum`-Klasse erstellen { #create-an-enum-class }
 
 Importieren Sie `Enum` und erstellen Sie eine Unterklasse, die von `str` und `Enum` erbt.
 
-Indem Sie von `str` erben, weiß die API Dokumentation, dass die Werte des Enums vom Typ `str` sein müssen, und wird in der Lage sein, korrekt zu rendern.
+Indem Sie von `str` erben, weiß die API-Dokumentation, dass die Werte vom Typ `string` sein müssen, und wird in der Lage sein, korrekt zu rendern.
 
-Erstellen Sie dann Klassen-Attribute mit festgelegten Werten, welches die erlaubten Werte sein werden:
+Erstellen Sie dann Klassen-Attribute mit festgelegten Werten, welche die verfügbaren gültigen Werte sein werden:
 
-```Python hl_lines="1  6-9"
-{!../../../docs_src/path_params/tutorial005.py!}
-```
+{* ../../docs_src/path_params/tutorial005_py310.py hl[1,6:9] *}
 
-/// info
+/// tip | Tipp
 
-<a href="https://docs.python.org/3/library/enum.html" class="external-link" target="_blank">Enumerationen (oder kurz Enums)</a> gibt es in Python seit Version 3.4.
+Falls Sie sich fragen: „AlexNet“, „ResNet“ und „LeNet“ sind nur Namen von <dfn title="Genauer gesagt: Deep-Learning-Modellarchitekturen">Modellen</dfn> für maschinelles Lernen.
 
 ///
 
-/// tip | "Tipp"
+### Einen *Pfad-Parameter* deklarieren { #declare-a-path-parameter }
 
-Falls Sie sich fragen, was „AlexNet“, „ResNet“ und „LeNet“ ist, das sind Namen von <abbr title="Genau genommen, Deep-Learning-Modellarchitekturen">Modellen</abbr> für maschinelles Lernen.
+Dann erstellen Sie einen *Pfad-Parameter* mit einer Typannotation, welche die von Ihnen erstellte Enum-Klasse (`ModelName`) verwendet:
 
-///
+{* ../../docs_src/path_params/tutorial005_py310.py hl[16] *}
 
-### Deklarieren Sie einen *Pfad-Parameter*
+### Die Dokumentation testen { #check-the-docs }
 
-Dann erstellen Sie einen *Pfad-Parameter*, der als Typ die gerade erstellte Enum-Klasse hat (`ModelName`):
-
-```Python hl_lines="16"
-{!../../../docs_src/path_params/tutorial005.py!}
-```
-
-### Testen Sie es in der API-Dokumentation
-
-Weil die erlaubten Werte für den *Pfad-Parameter* nun vordefiniert sind, kann die interaktive Dokumentation sie als Auswahl-Drop-Down anzeigen:
+Weil die verfügbaren Werte für den *Pfad-Parameter* nun vordefiniert sind, kann die interaktive Dokumentation diese hübsch anzeigen:
 
 <img src="/img/tutorial/path-params/image03.png">
 
-### Mit Python-*<abbr title="Enumeration – Aufzählung">Enums</abbr>* arbeiten
+### Mit Python-*Enumerationen* arbeiten { #working-with-python-enumerations }
 
-Der *Pfad-Parameter* wird ein *<abbr title="Member – Mitglied: Einer der möglichen Werte einer Enumeration">Member</abbr> eines Enums* sein.
+Der Wert des *Pfad-Parameters* wird ein *<abbr title="Member – Mitglied: Einer der möglichen Werte einer Enumeration">Member</abbr> einer Enumeration* sein.
 
-#### *Enum-Member* vergleichen
+#### *Enumeration-Member* vergleichen { #compare-enumeration-members }
 
-Sie können ihn mit einem Member Ihres Enums `ModelName` vergleichen:
+Sie können ihn mit dem *Enumeration-Member* in Ihrem erstellten Enum `ModelName` vergleichen:
 
-```Python hl_lines="17"
-{!../../../docs_src/path_params/tutorial005.py!}
-```
+{* ../../docs_src/path_params/tutorial005_py310.py hl[17] *}
 
-#### *Enum-Wert* erhalten
+#### *Enumerations-Wert* erhalten { #get-the-enumeration-value }
 
-Den tatsächlichen Wert (in diesem Fall ein `str`) erhalten Sie via `model_name.value`, oder generell, `ihr_enum_member.value`:
+Den tatsächlichen Wert (in diesem Fall ein `str`) erhalten Sie mittels `model_name.value`, oder generell, `your_enum_member.value`:
 
-```Python hl_lines="20"
-{!../../../docs_src/path_params/tutorial005.py!}
-```
+{* ../../docs_src/path_params/tutorial005_py310.py hl[20] *}
 
-/// tip | "Tipp"
+/// tip | Tipp
 
 Sie können den Wert `"lenet"` außerdem mittels `ModelName.lenet.value` abrufen.
 
 ///
 
-#### *Enum-Member* zurückgeben
+#### *Enumeration-Member* zurückgeben { #return-enumeration-members }
 
-Sie können *Enum-Member* in ihrer *Pfadoperation* zurückgeben, sogar verschachtelt in einem JSON-Body (z. B. als `dict`).
+Sie können *Enum-Member* von Ihrer *Pfadoperation* zurückgeben, sogar verschachtelt in einem JSON-Body (z. B. als `dict`).
 
-Diese werden zu ihren entsprechenden Werten konvertiert (in diesem Fall Strings), bevor sie zum Client übertragen werden:
+Diese werden zu ihren entsprechenden Werten konvertiert (in diesem Fall Strings), bevor sie an den Client zurückgegeben werden:
 
-```Python hl_lines="18  21  23"
-{!../../../docs_src/path_params/tutorial005.py!}
-```
+{* ../../docs_src/path_params/tutorial005_py310.py hl[18,21,23] *}
 
-In Ihrem Client erhalten Sie eine JSON-Response, wie etwa:
+In Ihrem Client erhalten Sie eine JSON-Response wie:
 
 ```JSON
 {
@@ -224,7 +199,7 @@ In Ihrem Client erhalten Sie eine JSON-Response, wie etwa:
 }
 ```
 
-## Pfad Parameter die Pfade enthalten
+## Pfad-Parameter, die Pfade enthalten { #path-parameters-containing-paths }
 
 Angenommen, Sie haben eine *Pfadoperation* mit einem Pfad `/files/{file_path}`.
 
@@ -232,47 +207,45 @@ Aber `file_path` soll selbst einen *Pfad* enthalten, etwa `home/johndoe/myfile.t
 
 Sprich, die URL für diese Datei wäre etwas wie: `/files/home/johndoe/myfile.txt`.
 
-### OpenAPI Unterstützung
+### OpenAPI-Unterstützung { #openapi-support }
 
-OpenAPI bietet nicht die Möglichkeit, dass ein *Pfad-Parameter* seinerseits einen *Pfad* enthalten kann, das würde zu Szenarios führen, die schwierig zu testen und zu definieren sind.
+OpenAPI bietet nicht die Möglichkeit, zu deklarieren, dass ein *Pfad-Parameter* in sich einen *Pfad* enthalten kann, da das zu Szenarios führen könnte, die schwierig zu testen und zu definieren sind.
 
 Trotzdem können Sie das in **FastAPI** tun, indem Sie eines der internen Tools von Starlette verwenden.
 
-Die Dokumentation würde weiterhin funktionieren, allerdings wird nicht dokumentiert werden, dass der Parameter ein Pfad sein sollte.
+Die Dokumentation würde weiterhin funktionieren, allerdings ohne irgendeine Dokumentation hinzuzufügen, die besagt, dass der Parameter einen Pfad enthalten sollte.
 
-### Pfad Konverter
+### Pfad-Konverter { #path-convertor }
 
-Mittels einer Option direkt von Starlette können Sie einen *Pfad-Parameter* deklarieren, der einen Pfad enthalten soll, indem Sie eine URL wie folgt definieren:
+Mittels einer Option direkt von Starlette können Sie einen *Pfad-Parameter* deklarieren, der einen *Pfad* enthält, indem Sie eine URL wie folgt definieren:
 
 ```
 /files/{file_path:path}
 ```
 
-In diesem Fall ist der Name des Parameters `file_path`. Der letzte Teil, `:path`, sagt aus, dass der Parameter ein *Pfad* sein soll.
+In diesem Fall ist der Name des Parameters `file_path`, und der letzte Teil, `:path`, sagt ihm, dass der Parameter mit jedem *Pfad* übereinstimmen sollte.
 
 Sie verwenden das also wie folgt:
 
-```Python hl_lines="6"
-{!../../../docs_src/path_params/tutorial004.py!}
-```
+{* ../../docs_src/path_params/tutorial004_py310.py hl[6] *}
 
-/// tip | "Tipp"
+/// tip | Tipp
 
-Der Parameter könnte einen führenden Schrägstrich (`/`) haben, wie etwa in `/home/johndoe/myfile.txt`.
+Der Parameter könnte `/home/johndoe/myfile.txt` enthalten müssen, mit einem führenden Schrägstrich (`/`).
 
 In dem Fall wäre die URL: `/files//home/johndoe/myfile.txt`, mit einem doppelten Schrägstrich (`//`) zwischen `files` und `home`.
 
 ///
 
-## Zusammenfassung
+## Zusammenfassung { #recap }
 
-In **FastAPI** erhalten Sie mittels kurzer, intuitiver Typdeklarationen:
+Mit **FastAPI** erhalten Sie mittels kurzer, intuitiver und Standard-Python-Typdeklarationen:
 
 * Editor-Unterstützung: Fehlerprüfungen, Codevervollständigung, usw.
-* Daten "<abbr title="Den String, der von einer HTTP Anfrage kommt, nach Python-Daten konvertieren">parsen</abbr>"
+* Daten „<dfn title="Den String, der von einem HTTP-Request kommt, in Python-Daten konvertieren">parsen</dfn>“
 * Datenvalidierung
-* API-Annotationen und automatische Dokumentation
+* API-Annotation und automatische Dokumentation
 
 Und Sie müssen sie nur einmal deklarieren.
 
-Das ist wahrscheinlich der sichtbarste Unterschied zwischen **FastAPI** und alternativen Frameworks (abgesehen von der reinen Performanz).
+Das ist wahrscheinlich der wichtigste sichtbare Vorteil von **FastAPI** im Vergleich zu alternativen Frameworks (abgesehen von der rohen Performanz).

@@ -1,12 +1,12 @@
-# Simple OAuth2 with Password and Bearer
+# Simple OAuth2 with Password and Bearer { #simple-oauth2-with-password-and-bearer }
 
 Now let's build from the previous chapter and add the missing parts to have a complete security flow.
 
-## Get the `username` and `password`
+## Get the `username` and `password` { #get-the-username-and-password }
 
 We are going to use **FastAPI** security utilities to get the `username` and `password`.
 
-OAuth2 specifies that when using the "password flow" (that we are using) the client/user must send a `username` and `password` fields as form data.
+OAuth2 specifies that when using the "password flow" (that we are using) the client/user must send `username` and `password` fields as form data.
 
 And the spec says that the fields have to be named like that. So `user-name` or `email` wouldn't work.
 
@@ -18,7 +18,7 @@ But for the login *path operation*, we need to use these names to be compatible 
 
 The spec also states that the `username` and `password` must be sent as form data (so, no JSON here).
 
-### `scope`
+### `scope` { #scope }
 
 The spec also says that the client can send another form field "`scope`".
 
@@ -32,7 +32,7 @@ They are normally used to declare specific security permissions, for example:
 * `instagram_basic` is used by Facebook / Instagram.
 * `https://www.googleapis.com/auth/drive` is used by Google.
 
-/// info
+/// note
 
 In OAuth2 a "scope" is just a string that declares a specific permission required.
 
@@ -44,65 +44,15 @@ For OAuth2 they are just strings.
 
 ///
 
-## Code to get the `username` and `password`
+## Code to get the `username` and `password` { #code-to-get-the-username-and-password }
 
 Now let's use the utilities provided by **FastAPI** to handle this.
 
-### `OAuth2PasswordRequestForm`
+### `OAuth2PasswordRequestForm` { #oauth2passwordrequestform }
 
 First, import `OAuth2PasswordRequestForm`, and use it as a dependency with `Depends` in the *path operation* for `/token`:
 
-//// tab | Python 3.10+
-
-```Python hl_lines="4  78"
-{!> ../../../docs_src/security/tutorial003_an_py310.py!}
-```
-
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="4  78"
-{!> ../../../docs_src/security/tutorial003_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="4  79"
-{!> ../../../docs_src/security/tutorial003_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="2  74"
-{!> ../../../docs_src/security/tutorial003_py310.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="4  76"
-{!> ../../../docs_src/security/tutorial003.py!}
-```
-
-////
+{* ../../docs_src/security/tutorial003_an_py310.py hl[4,78] *}
 
 `OAuth2PasswordRequestForm` is a class dependency that declares a form body with:
 
@@ -122,7 +72,7 @@ If you need to enforce it, use `OAuth2PasswordRequestFormStrict` instead of `OAu
 * An optional `client_id` (we don't need it for our example).
 * An optional `client_secret` (we don't need it for our example).
 
-/// info
+/// note
 
 The `OAuth2PasswordRequestForm` is not a special class for **FastAPI** as is `OAuth2PasswordBearer`.
 
@@ -134,7 +84,7 @@ But as it's a common use case, it is provided by **FastAPI** directly, just to m
 
 ///
 
-### Use the form data
+### Use the form data { #use-the-form-data }
 
 /// tip
 
@@ -150,59 +100,9 @@ If there is no such user, we return an error saying "Incorrect username or passw
 
 For the error, we use the exception `HTTPException`:
 
-//// tab | Python 3.10+
+{* ../../docs_src/security/tutorial003_an_py310.py hl[3,79:81] *}
 
-```Python hl_lines="3  79-81"
-{!> ../../../docs_src/security/tutorial003_an_py310.py!}
-```
-
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="3  79-81"
-{!> ../../../docs_src/security/tutorial003_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="3  80-82"
-{!> ../../../docs_src/security/tutorial003_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="1  75-77"
-{!> ../../../docs_src/security/tutorial003_py310.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="3  77-79"
-{!> ../../../docs_src/security/tutorial003.py!}
-```
-
-////
-
-### Check the password
+### Check the password { #check-the-password }
 
 At this point we have the user data from our database, but we haven't checked the password.
 
@@ -212,7 +112,7 @@ You should never save plaintext passwords, so, we'll use the (fake) password has
 
 If the passwords don't match, we return the same error.
 
-#### Password hashing
+#### Password hashing { #password-hashing }
 
 "Hashing" means: converting some content (a password in this case) into a sequence of bytes (just a string) that looks like gibberish.
 
@@ -220,65 +120,15 @@ Whenever you pass exactly the same content (exactly the same password) you get e
 
 But you cannot convert from the gibberish back to the password.
 
-##### Why use password hashing
+##### Why use password hashing { #why-use-password-hashing }
 
 If your database is stolen, the thief won't have your users' plaintext passwords, only the hashes.
 
 So, the thief won't be able to try to use those same passwords in another system (as many users use the same password everywhere, this would be dangerous).
 
-//// tab | Python 3.10+
+{* ../../docs_src/security/tutorial003_an_py310.py hl[82:85] *}
 
-```Python hl_lines="82-85"
-{!> ../../../docs_src/security/tutorial003_an_py310.py!}
-```
-
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="82-85"
-{!> ../../../docs_src/security/tutorial003_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="83-86"
-{!> ../../../docs_src/security/tutorial003_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="78-81"
-{!> ../../../docs_src/security/tutorial003_py310.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="80-83"
-{!> ../../../docs_src/security/tutorial003.py!}
-```
-
-////
-
-#### About `**user_dict`
+#### About `**user_dict` { #about-user-dict }
 
 `UserInDB(**user_dict)` means:
 
@@ -294,13 +144,13 @@ UserInDB(
 )
 ```
 
-/// info
+/// note
 
-For a more complete explanation of `**user_dict` check back in [the documentation for **Extra Models**](../extra-models.md#about-user_indict){.internal-link target=_blank}.
+For a more complete explanation of `**user_dict` check back in [the documentation for **Extra Models**](../extra-models.md#about-user-in-model-dump).
 
 ///
 
-## Return the token
+## Return the token { #return-the-token }
 
 The response of the `token` endpoint must be a JSON object.
 
@@ -318,57 +168,7 @@ But for now, let's focus on the specific details we need.
 
 ///
 
-//// tab | Python 3.10+
-
-```Python hl_lines="87"
-{!> ../../../docs_src/security/tutorial003_an_py310.py!}
-```
-
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="87"
-{!> ../../../docs_src/security/tutorial003_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="88"
-{!> ../../../docs_src/security/tutorial003_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="83"
-{!> ../../../docs_src/security/tutorial003_py310.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="85"
-{!> ../../../docs_src/security/tutorial003.py!}
-```
-
-////
+{* ../../docs_src/security/tutorial003_an_py310.py hl[87] *}
 
 /// tip
 
@@ -382,7 +182,7 @@ For the rest, **FastAPI** handles it for you.
 
 ///
 
-## Update the dependencies
+## Update the dependencies { #update-the-dependencies }
 
 Now we are going to update our dependencies.
 
@@ -390,63 +190,13 @@ We want to get the `current_user` *only* if this user is active.
 
 So, we create an additional dependency `get_current_active_user` that in turn uses `get_current_user` as a dependency.
 
-Both of these dependencies will just return an HTTP error if the user doesn't exist, or if is inactive.
+Both of these dependencies will just return an HTTP error if the user doesn't exist, or is inactive.
 
 So, in our endpoint, we will only get a user if the user exists, was correctly authenticated, and is active:
 
-//// tab | Python 3.10+
+{* ../../docs_src/security/tutorial003_an_py310.py hl[58:66,69:74,94] *}
 
-```Python hl_lines="58-66  69-74  94"
-{!> ../../../docs_src/security/tutorial003_an_py310.py!}
-```
-
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="58-66  69-74  94"
-{!> ../../../docs_src/security/tutorial003_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="59-67  70-75  95"
-{!> ../../../docs_src/security/tutorial003_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="56-64  67-70  88"
-{!> ../../../docs_src/security/tutorial003_py310.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="58-66  69-72  90"
-{!> ../../../docs_src/security/tutorial003.py!}
-```
-
-////
-
-/// info
+/// note
 
 The additional header `WWW-Authenticate` with value `Bearer` we are returning here is also part of the spec.
 
@@ -464,11 +214,11 @@ That's the benefit of standards...
 
 ///
 
-## See it in action
+## See it in action { #see-it-in-action }
 
-Open the interactive docs: <a href="http://127.0.0.1:8000/docs" class="external-link" target="_blank">http://127.0.0.1:8000/docs</a>.
+Open the interactive docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
-### Authenticate
+### Authenticate { #authenticate }
 
 Click the "Authorize" button.
 
@@ -484,7 +234,7 @@ After authenticating in the system, you will see it like:
 
 <img src="/img/tutorial/security/image05.png">
 
-### Get your own user data
+### Get your own user data { #get-your-own-user-data }
 
 Now use the operation `GET` with the path `/users/me`.
 
@@ -510,7 +260,7 @@ If you click the lock icon and logout, and then try the same operation again, yo
 }
 ```
 
-### Inactive user
+### Inactive user { #inactive-user }
 
 Now try with an inactive user, authenticate with:
 
@@ -528,7 +278,7 @@ You will get an "Inactive user" error, like:
 }
 ```
 
-## Recap
+## Recap { #recap }
 
 You now have the tools to implement a complete security system based on `username` and `password` for your API.
 

@@ -1,4 +1,4 @@
-# Server Workers - Uvicorn with Workers
+# Server Workers - Uvicorn with Workers { #server-workers-uvicorn-with-workers }
 
 Let's check back those deployment concepts from before:
 
@@ -13,19 +13,19 @@ Up to this point, with all the tutorials in the docs, you have probably been run
 
 When deploying applications you will probably want to have some **replication of processes** to take advantage of **multiple cores** and to be able to handle more requests.
 
-As you saw in the previous chapter about [Deployment Concepts](concepts.md){.internal-link target=_blank}, there are multiple strategies you can use.
+As you saw in the previous chapter about [Deployment Concepts](concepts.md), there are multiple strategies you can use.
 
 Here I'll show you how to use **Uvicorn** with **worker processes** using the `fastapi` command or the `uvicorn` command directly.
 
-/// info
+/// note
 
-If you are using containers, for example with Docker or Kubernetes, I'll tell you more about that in the next chapter: [FastAPI in Containers - Docker](docker.md){.internal-link target=_blank}.
+If you are using containers, for example with Docker or Kubernetes, I'll tell you more about that in the next chapter: [FastAPI in Containers - Docker](docker.md).
 
 In particular, when running on **Kubernetes** you will probably **not** want to use workers and instead run **a single Uvicorn process per container**, but I'll tell you about it later in that chapter.
 
 ///
 
-## Multiple Workers
+## Multiple Workers { #multiple-workers }
 
 You can start multiple workers with the `--workers` command line option:
 
@@ -36,56 +36,43 @@ If you use the `fastapi` command:
 <div class="termy">
 
 ```console
-$ <pre> <font color="#4E9A06">fastapi</font> run --workers 4 <u style="text-decoration-style:single">main.py</u>
-<font color="#3465A4">INFO    </font> Using path <font color="#3465A4">main.py</font>
-<font color="#3465A4">INFO    </font> Resolved absolute path <font color="#75507B">/home/user/code/awesomeapp/</font><font color="#AD7FA8">main.py</font>
-<font color="#3465A4">INFO    </font> Searching for package file structure from directories with <font color="#3465A4">__init__.py</font> files
-<font color="#3465A4">INFO    </font> Importing from <font color="#75507B">/home/user/code/</font><font color="#AD7FA8">awesomeapp</font>
+$ <font color="#4E9A06">fastapi</font> run --workers 4 <u style="text-decoration-style:solid">main.py</u>
 
- ╭─ <font color="#8AE234"><b>Python module file</b></font> ─╮
- │                      │
- │  🐍 main.py          │
- │                      │
- ╰──────────────────────╯
+  <span style="background-color:#009485"><font color="#D3D7CF"> FastAPI </font></span>  Starting production server 🚀
 
-<font color="#3465A4">INFO    </font> Importing module <font color="#4E9A06">main</font>
-<font color="#3465A4">INFO    </font> Found importable FastAPI app
+             Searching for package file structure from directories with
+             <font color="#3465A4">__init__.py</font> files
+             Importing from <font color="#75507B">/home/user/code/</font><font color="#AD7FA8">awesomeapp</font>
 
- ╭─ <font color="#8AE234"><b>Importable FastAPI app</b></font> ─╮
- │                          │
- │  <span style="background-color:#272822"><font color="#FF4689">from</font></span><span style="background-color:#272822"><font color="#F8F8F2"> main </font></span><span style="background-color:#272822"><font color="#FF4689">import</font></span><span style="background-color:#272822"><font color="#F8F8F2"> app</font></span><span style="background-color:#272822">  </span>  │
- │                          │
- ╰──────────────────────────╯
+   <span style="background-color:#007166"><font color="#D3D7CF"> module </font></span>  🐍 main.py
 
-<font color="#3465A4">INFO    </font> Using import string <font color="#8AE234"><b>main:app</b></font>
+     <span style="background-color:#007166"><font color="#D3D7CF"> code </font></span>  Importing the FastAPI app object from the module with the
+             following code:
 
- <font color="#4E9A06">╭─────────── FastAPI CLI - Production mode ───────────╮</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">│  Serving at: http://0.0.0.0:8000                    │</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">│  API docs: http://0.0.0.0:8000/docs                 │</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">│  Running in production mode, for development use:   │</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">│  </font><font color="#8AE234"><b>fastapi dev</b></font><font color="#4E9A06">                                        │</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">╰─────────────────────────────────────────────────────╯</font>
+             <u style="text-decoration-style:solid">from </u><u style="text-decoration-style:solid"><b>main</b></u><u style="text-decoration-style:solid"> import </u><u style="text-decoration-style:solid"><b>app</b></u>
 
-<font color="#4E9A06">INFO</font>:     Uvicorn running on <b>http://0.0.0.0:8000</b> (Press CTRL+C to quit)
-<font color="#4E9A06">INFO</font>:     Started parent process [<font color="#34E2E2"><b>27365</b></font>]
-<font color="#4E9A06">INFO</font>:     Started server process [<font color="#06989A">27368</font>]
-<font color="#4E9A06">INFO</font>:     Waiting for application startup.
-<font color="#4E9A06">INFO</font>:     Application startup complete.
-<font color="#4E9A06">INFO</font>:     Started server process [<font color="#06989A">27369</font>]
-<font color="#4E9A06">INFO</font>:     Waiting for application startup.
-<font color="#4E9A06">INFO</font>:     Application startup complete.
-<font color="#4E9A06">INFO</font>:     Started server process [<font color="#06989A">27370</font>]
-<font color="#4E9A06">INFO</font>:     Waiting for application startup.
-<font color="#4E9A06">INFO</font>:     Application startup complete.
-<font color="#4E9A06">INFO</font>:     Started server process [<font color="#06989A">27367</font>]
-<font color="#4E9A06">INFO</font>:     Waiting for application startup.
-<font color="#4E9A06">INFO</font>:     Application startup complete.
-</pre>
+      <span style="background-color:#007166"><font color="#D3D7CF"> app </font></span>  Using import string: <font color="#3465A4">main:app</font>
+
+   <span style="background-color:#007166"><font color="#D3D7CF"> server </font></span>  Server started at <font color="#729FCF"><u style="text-decoration-style:solid">http://0.0.0.0:8000</u></font>
+   <span style="background-color:#007166"><font color="#D3D7CF"> server </font></span>  Documentation at <font color="#729FCF"><u style="text-decoration-style:solid">http://0.0.0.0:8000/docs</u></font>
+
+             Logs:
+
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Uvicorn running on <font color="#729FCF"><u style="text-decoration-style:solid">http://0.0.0.0:8000</u></font> <b>(</b>Press CTRL+C to
+             quit<b>)</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started parent process <b>[</b><font color="#34E2E2"><b>27365</b></font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started server process <b>[</b><font color="#34E2E2"><b>27368</b></font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started server process <b>[</b><font color="#34E2E2"><b>27369</b></font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started server process <b>[</b><font color="#34E2E2"><b>27370</b></font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started server process <b>[</b><font color="#34E2E2"><b>27367</b></font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Waiting for application startup.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Waiting for application startup.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Waiting for application startup.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Waiting for application startup.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Application startup complete.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Application startup complete.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Application startup complete.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Application startup complete.
 ```
 
 </div>
@@ -99,7 +86,7 @@ If you prefer to use the `uvicorn` command directly:
 <div class="termy">
 
 ```console
-$ uvicorn main:app --host 0.0.0.0 --port 8080 --workers 4
+$ uv run uvicorn main:app --host 0.0.0.0 --port 8080 --workers 4
 <font color="#A6E22E">INFO</font>:     Uvicorn running on <b>http://0.0.0.0:8080</b> (Press CTRL+C to quit)
 <font color="#A6E22E">INFO</font>:     Started parent process [<font color="#A1EFE4"><b>27365</b></font>]
 <font color="#A6E22E">INFO</font>:     Started server process [<font color="#A1EFE4">27368</font>]
@@ -124,7 +111,7 @@ The only new option here is `--workers` telling Uvicorn to start 4 worker proces
 
 You can also see that it shows the **PID** of each process, `27365` for the parent process (this is the **process manager**) and one for each worker process: `27368`, `27369`, `27370`, and `27367`.
 
-## Deployment Concepts
+## Deployment Concepts { #deployment-concepts }
 
 Here you saw how to use multiple **workers** to **parallelize** the execution of the application, take advantage of **multiple cores** in the CPU, and be able to serve **more requests**.
 
@@ -137,13 +124,13 @@ From the list of deployment concepts from above, using workers would mainly help
 * **Memory**
 * **Previous steps before starting**
 
-## Containers and Docker
+## Containers and Docker { #containers-and-docker }
 
-In the next chapter about [FastAPI in Containers - Docker](docker.md){.internal-link target=_blank} I'll explain some strategies you could use to handle the other **deployment concepts**.
+In the next chapter about [FastAPI in Containers - Docker](docker.md) I'll explain some strategies you could use to handle the other **deployment concepts**.
 
 I'll show you how to **build your own image from scratch** to run a single Uvicorn process. It is a simple process and is probably what you would want to do when using a distributed container management system like **Kubernetes**.
 
-## Recap
+## Recap { #recap }
 
 You can use multiple worker processes with the `--workers` CLI option with the `fastapi` or `uvicorn` commands to take advantage of **multi-core CPUs**, to run **multiple processes in parallel**.
 

@@ -1,4 +1,4 @@
-# OAuth2 with Password (and hashing), Bearer with JWT tokens
+# OAuth2 with Password (and hashing), Bearer with JWT tokens { #oauth2-with-password-and-hashing-bearer-with-jwt-tokens }
 
 Now that we have all the security flow, let's make the application actually secure, using <abbr title="JSON Web Tokens">JWT</abbr> tokens and secure password hashing.
 
@@ -6,7 +6,7 @@ This code is something you can actually use in your application, save the passwo
 
 We are going to start from where we left in the previous chapter and increment it.
 
-## About JWT
+## About JWT { #about-jwt }
 
 JWT means "JSON Web Tokens".
 
@@ -18,39 +18,39 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4
 
 It is not encrypted, so, anyone could recover the information from the contents.
 
-But it's signed. So, when you receive a token that you emitted, you can verify that you actually emitted it.
+But it's signed. So, when you receive a token that you issued, you can verify that it was you who issued it.
 
 That way, you can create a token with an expiration of, let's say, 1 week. And then when the user comes back the next day with the token, you know that user is still logged in to your system.
 
 After a week, the token will be expired and the user will not be authorized and will have to sign in again to get a new token. And if the user (or a third party) tried to modify the token to change the expiration, you would be able to discover it, because the signatures would not match.
 
-If you want to play with JWT tokens and see how they work, check <a href="https://jwt.io/" class="external-link" target="_blank">https://jwt.io</a>.
+If you want to play with JWT tokens and see how they work, check [https://jwt.io](https://jwt.io/).
 
-## Install `PyJWT`
+## Install `PyJWT` { #install-pyjwt }
 
 We need to install `PyJWT` to generate and verify the JWT tokens in Python.
 
-Make sure you create a [virtual environment](../../virtual-environments.md){.internal-link target=_blank}, activate it, and then install `pyjwt`:
+Add `pyjwt` to your project:
 
 <div class="termy">
 
 ```console
-$ pip install pyjwt
+$ uv add pyjwt
 
 ---> 100%
 ```
 
 </div>
 
-/// info
+/// note
 
 If you are planning to use digital signature algorithms like RSA or ECDSA, you should install the cryptography library dependency `pyjwt[crypto]`.
 
-You can read more about it in the <a href="https://pyjwt.readthedocs.io/en/latest/installation.html" class="external-link" target="_blank">PyJWT Installation docs</a>.
+You can read more about it in the [PyJWT Installation docs](https://pyjwt.readthedocs.io/en/latest/installation.html).
 
 ///
 
-## Password hashing
+## Password hashing { #password-hashing }
 
 "Hashing" means converting some content (a password in this case) into a sequence of bytes (just a string) that looks like gibberish.
 
@@ -58,26 +58,26 @@ Whenever you pass exactly the same content (exactly the same password) you get e
 
 But you cannot convert from the gibberish back to the password.
 
-### Why use password hashing
+### Why use password hashing { #why-use-password-hashing }
 
 If your database is stolen, the thief won't have your users' plaintext passwords, only the hashes.
 
 So, the thief won't be able to try to use that password in another system (as many users use the same password everywhere, this would be dangerous).
 
-## Install `passlib`
+## Install `pwdlib` { #install-pwdlib }
 
-PassLib is a great Python package to handle password hashes.
+pwdlib is a great Python package to handle password hashes.
 
 It supports many secure hashing algorithms and utilities to work with them.
 
-The recommended algorithm is "Bcrypt".
+The recommended algorithm is "Argon2".
 
-Make sure you create a [virtual environment](../virtual-environments.md){.internal-link target=_blank}, activate it, and then install PassLib with Bcrypt:
+Add `pwdlib` with Argon2 to your project:
 
 <div class="termy">
 
 ```console
-$ pip install "passlib[bcrypt]"
+$ uv add "pwdlib[argon2]"
 
 ---> 100%
 ```
@@ -86,7 +86,7 @@ $ pip install "passlib[bcrypt]"
 
 /// tip
 
-With `passlib`, you could even configure it to be able to read passwords created by **Django**, a **Flask** security plug-in or many others.
+With `pwdlib`, you could even configure it to be able to read passwords created by **Django**, a **Flask** security plug-in or many others.
 
 So, you would be able to, for example, share the same data from a Django application in a database with a FastAPI application. Or gradually migrate a Django application using the same database.
 
@@ -94,17 +94,17 @@ And your users would be able to login from your Django app or from your **FastAP
 
 ///
 
-## Hash and verify the passwords
+## Hash and verify the passwords { #hash-and-verify-the-passwords }
 
-Import the tools we need from `passlib`.
+Import the tools we need from `pwdlib`.
 
-Create a PassLib "context". This is what will be used to hash and verify passwords.
+Create a PasswordHash instance with recommended settings - it will be used for hashing and verifying passwords.
 
 /// tip
 
-The PassLib context also has functionality to use different hashing algorithms, including deprecated old ones only to allow verifying them, etc.
+pwdlib also supports the bcrypt hashing algorithm but does not include legacy algorithms - for working with outdated hashes, it is recommended to use the passlib library.
 
-For example, you could use it to read and verify passwords generated by another system (like Django) but hash any new passwords with a different algorithm like Bcrypt.
+For example, you could use it to read and verify passwords generated by another system (like Django) but hash any new passwords with a different algorithm like Argon2 or Bcrypt.
 
 And be compatible with all of them at the same time.
 
@@ -116,65 +116,19 @@ And another utility to verify if a received password matches the hash stored.
 
 And another one to authenticate and return a user.
 
-//// tab | Python 3.10+
+{* ../../docs_src/security/tutorial004_an_py310.py hl[8,49,51,58:59,62:63,72:79] *}
 
-```Python hl_lines="8  49  56-57  60-61  70-76"
-{!> ../../../docs_src/security/tutorial004_an_py310.py!}
-```
+When `authenticate_user` is called with a username that doesn't exist in the database, we still run `verify_password` against a dummy hash.
 
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="8  49  56-57  60-61  70-76"
-{!> ../../../docs_src/security/tutorial004_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="8  50  57-58  61-62  71-77"
-{!> ../../../docs_src/security/tutorial004_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="7  48  55-56  59-60  69-75"
-{!> ../../../docs_src/security/tutorial004_py310.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="8  49  56-57  60-61  70-76"
-{!> ../../../docs_src/security/tutorial004.py!}
-```
-
-////
+This ensures the endpoint takes roughly the same amount of time to respond whether the username is valid or not, preventing **timing attacks** that could be used to enumerate existing usernames.
 
 /// note
 
-If you check the new (fake) database `fake_users_db`, you will see how the hashed password looks like now: `"$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW"`.
+If you check the new (fake) database `fake_users_db`, you will see what the hashed password looks like now: `"$argon2id$v=19$m=65536,t=3,p=4$wagCPXjifgvUFBzq4hqe3w$CYaIb8sB+wtD+Vu/P4uod1+Qof8h+1g7bbDlBID48Rc"`.
 
 ///
 
-## Handle JWT tokens
+## Handle JWT tokens { #handle-jwt-tokens }
 
 Import the modules installed.
 
@@ -202,59 +156,9 @@ Define a Pydantic Model that will be used in the token endpoint for the response
 
 Create a utility function to generate a new access token.
 
-//// tab | Python 3.10+
+{* ../../docs_src/security/tutorial004_an_py310.py hl[4,7,13:15,29:31,82:90] *}
 
-```Python hl_lines="4 7  13-15  29-31  79-87"
-{!> ../../../docs_src/security/tutorial004_an_py310.py!}
-```
-
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="4 7  13-15  29-31  79-87"
-{!> ../../../docs_src/security/tutorial004_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="4 7  14-16  30-32 80-88"
-{!> ../../../docs_src/security/tutorial004_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="3 6  12-14  28-30  78-86"
-{!> ../../../docs_src/security/tutorial004_py310.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="4 7  13-15  29-31  79-87"
-{!> ../../../docs_src/security/tutorial004.py!}
-```
-
-////
-
-## Update the dependencies
+## Update the dependencies { #update-the-dependencies }
 
 Update `get_current_user` to receive the same token as before, but this time, using JWT tokens.
 
@@ -262,117 +166,17 @@ Decode the received token, verify it, and return the current user.
 
 If the token is invalid, return an HTTP error right away.
 
-//// tab | Python 3.10+
+{* ../../docs_src/security/tutorial004_an_py310.py hl[93:110] *}
 
-```Python hl_lines="90-107"
-{!> ../../../docs_src/security/tutorial004_an_py310.py!}
-```
-
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="90-107"
-{!> ../../../docs_src/security/tutorial004_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="91-108"
-{!> ../../../docs_src/security/tutorial004_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="89-106"
-{!> ../../../docs_src/security/tutorial004_py310.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="90-107"
-{!> ../../../docs_src/security/tutorial004.py!}
-```
-
-////
-
-## Update the `/token` *path operation*
+## Update the `/token` *path operation* { #update-the-token-path-operation }
 
 Create a `timedelta` with the expiration time of the token.
 
 Create a real JWT access token and return it.
 
-//// tab | Python 3.10+
+{* ../../docs_src/security/tutorial004_an_py310.py hl[121:136] *}
 
-```Python hl_lines="118-133"
-{!> ../../../docs_src/security/tutorial004_an_py310.py!}
-```
-
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="118-133"
-{!> ../../../docs_src/security/tutorial004_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="119-134"
-{!> ../../../docs_src/security/tutorial004_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="115-130"
-{!> ../../../docs_src/security/tutorial004_py310.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip
-
-Prefer to use the `Annotated` version if possible.
-
-///
-
-```Python hl_lines="116-131"
-{!> ../../../docs_src/security/tutorial004.py!}
-```
-
-////
-
-### Technical details about the JWT "subject" `sub`
+### Technical details about the JWT "subject" `sub` { #technical-details-about-the-jwt-subject-sub }
 
 The JWT specification says that there's a key `sub`, with the subject of the token.
 
@@ -394,9 +198,9 @@ So, to avoid ID collisions, when creating the JWT token for the user, you could 
 
 The important thing to keep in mind is that the `sub` key should have a unique identifier across the entire application, and it should be a string.
 
-## Check it
+## Check it { #check-it }
 
-Run the server and go to the docs: <a href="http://127.0.0.1:8000/docs" class="external-link" target="_blank">http://127.0.0.1:8000/docs</a>.
+Run the server and go to the docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
 You'll see the user interface like:
 
@@ -409,7 +213,7 @@ Using the credentials:
 Username: `johndoe`
 Password: `secret`
 
-/// check
+/// tip
 
 Notice that nowhere in the code is the plaintext password "`secret`", we only have the hashed version.
 
@@ -440,7 +244,7 @@ Notice the header `Authorization`, with a value that starts with `Bearer `.
 
 ///
 
-## Advanced usage with `scopes`
+## Advanced usage with `scopes` { #advanced-usage-with-scopes }
 
 OAuth2 has the notion of "scopes".
 
@@ -450,7 +254,7 @@ Then you can give this token to a user directly or a third party, to interact wi
 
 You can learn how to use them and how they are integrated into **FastAPI** later in the **Advanced User Guide**.
 
-## Recap
+## Recap { #recap }
 
 With what you have seen up to now, you can set up a secure **FastAPI** application using standards like OAuth2 and JWT.
 
@@ -464,10 +268,10 @@ Many packages that simplify it a lot have to make many compromises with the data
 
 It gives you all the flexibility to choose the ones that fit your project the best.
 
-And you can use directly many well maintained and widely used packages like `passlib` and `PyJWT`, because **FastAPI** doesn't require any complex mechanisms to integrate external packages.
+And you can use directly many well maintained and widely used packages like `pwdlib` and `PyJWT`, because **FastAPI** doesn't require any complex mechanisms to integrate external packages.
 
 But it provides you the tools to simplify the process as much as possible without compromising flexibility, robustness, or security.
 
 And you can use and implement secure, standard protocols, like OAuth2 in a relatively simple way.
 
-You can learn more in the **Advanced User Guide** about how to use OAuth2 "scopes", for a more fine-grained permission system, following these same standards. OAuth2 with scopes is the mechanism used by many big authentication providers, like Facebook, Google, GitHub, Microsoft, Twitter, etc. to authorize third party applications to interact with their APIs on behalf of their users.
+You can learn more in the **Advanced User Guide** about how to use OAuth2 "scopes", for a more fine-grained permission system, following these same standards. OAuth2 with scopes is the mechanism used by many big authentication providers, like Facebook, Google, GitHub, Microsoft, X (Twitter), etc. to authorize third party applications to interact with their APIs on behalf of their users.

@@ -1,8 +1,8 @@
-# Sicherheit – Erste Schritte
+# Sicherheit – Erste Schritte { #security-first-steps }
 
 Stellen wir uns vor, dass Sie Ihre **Backend**-API auf einer Domain haben.
 
-Und Sie haben ein **Frontend** auf einer anderen Domain oder in einem anderen Pfad derselben Domain (oder in einer mobilen Anwendung).
+Und Sie haben ein **Frontend** auf einer anderen Domain oder in einem anderen Pfad derselben Domain (oder in einer Mobile-Anwendung).
 
 Und Sie möchten eine Möglichkeit haben, dass sich das Frontend mithilfe eines **Benutzernamens** und eines **Passworts** beim Backend authentisieren kann.
 
@@ -12,53 +12,31 @@ Aber ersparen wir Ihnen die Zeit, die gesamte lange Spezifikation zu lesen, nur 
 
 Lassen Sie uns die von **FastAPI** bereitgestellten Tools verwenden, um Sicherheit zu gewährleisten.
 
-## Wie es aussieht
+## Wie es aussieht { #how-it-looks }
 
 Lassen Sie uns zunächst einfach den Code verwenden und sehen, wie er funktioniert, und dann kommen wir zurück, um zu verstehen, was passiert.
 
-## `main.py` erstellen
+## `main.py` erstellen { #create-main-py }
 
 Kopieren Sie das Beispiel in eine Datei `main.py`:
 
-//// tab | Python 3.9+
+{* ../../docs_src/security/tutorial001_an_py310.py *}
 
-```Python
-{!> ../../../docs_src/security/tutorial001_an_py39.py!}
+## Ausführen { #run-it }
+
+/// note | Hinweis
+
+Das Paket [`python-multipart`](https://github.com/Kludex/python-multipart) wird automatisch mit **FastAPI** installiert, wenn Sie den Befehl `uv add "fastapi[standard]"` ausführen.
+
+Wenn Sie jedoch den Befehl `uv add fastapi` verwenden, ist das Paket `python-multipart` nicht standardmäßig enthalten.
+
+Um es manuell zu installieren, fügen Sie es Ihrem Projekt hinzu mit:
+
+```console
+$ uv add python-multipart
 ```
 
-////
-
-//// tab | Python 3.8+
-
-```Python
-{!> ../../../docs_src/security/tutorial001_an.py!}
-```
-
-////
-
-//// tab | Python 3.8+ nicht annotiert
-
-/// tip | "Tipp"
-
-Bevorzugen Sie die `Annotated`-Version, falls möglich.
-
-///
-
-```Python
-{!> ../../../docs_src/security/tutorial001.py!}
-```
-
-////
-
-## Ausführen
-
-/// info
-
-Um hochgeladene Dateien zu empfangen, installieren Sie zuerst <a href="https://andrew-d.github.io/python-multipart/" class="external-link" target="_blank">`python-multipart`</a>.
-
-Z. B. `pip install python-multipart`.
-
-Das, weil **OAuth2** „Formulardaten“ zum Senden von `username` und `password` verwendet.
+Das liegt daran, dass **OAuth2** „Formulardaten“ zum Senden von `username` und `password` verwendet.
 
 ///
 
@@ -67,22 +45,22 @@ Führen Sie das Beispiel aus mit:
 <div class="termy">
 
 ```console
-$ uvicorn main:app --reload
+$ uv run fastapi dev
 
 <span style="color: green;">INFO</span>:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ```
 
 </div>
 
-## Überprüfen
+## Es testen { #check-it }
 
-Gehen Sie zu der interaktiven Dokumentation unter: <a href="http://127.0.0.1:8000/docs" class="external-link" target="_blank">http://127.0.0.1:8000/docs</a>.
+Gehen Sie zu der interaktiven Dokumentation unter: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
 Sie werden etwa Folgendes sehen:
 
 <img src="/img/tutorial/security/image01.png">
 
-/// check | "Authorize-Button!"
+/// tip | Authorize-Button!
 
 Sie haben bereits einen glänzenden, neuen „Authorize“-Button.
 
@@ -94,7 +72,7 @@ Und wenn Sie darauf klicken, erhalten Sie ein kleines Anmeldeformular zur Eingab
 
 <img src="/img/tutorial/security/image02.png">
 
-/// note | "Hinweis"
+/// note | Hinweis
 
 Es spielt keine Rolle, was Sie in das Formular eingeben, es wird noch nicht funktionieren. Wir kommen dahin.
 
@@ -108,7 +86,7 @@ Es kann von Anwendungen und Systemen Dritter verwendet werden.
 
 Und es kann auch von Ihnen selbst verwendet werden, um dieselbe Anwendung zu debuggen, zu prüfen und zu testen.
 
-## Der `password`-Flow
+## Der `password`-Flow { #the-password-flow }
 
 Lassen Sie uns nun etwas zurückgehen und verstehen, was das alles ist.
 
@@ -131,16 +109,16 @@ Betrachten wir es also aus dieser vereinfachten Sicht:
 * Der Benutzer klickt im Frontend, um zu einem anderen Abschnitt der Frontend-Web-Anwendung zu gelangen.
 * Das Frontend muss weitere Daten von der API abrufen.
     * Es benötigt jedoch eine Authentifizierung für diesen bestimmten Endpunkt.
-    * Um sich also bei unserer API zu authentifizieren, sendet es einen Header `Authorization` mit dem Wert `Bearer` plus dem Token.
+    * Um sich also bei unserer API zu authentifizieren, sendet es einen `Authorization`-Header mit dem Wert `Bearer ` plus dem Token.
     * Wenn der Token `foobar` enthielte, wäre der Inhalt des `Authorization`-Headers: `Bearer foobar`.
 
-## **FastAPI**s `OAuth2PasswordBearer`
+## **FastAPI**s `OAuth2PasswordBearer` { #fastapis-oauth2passwordbearer }
 
 **FastAPI** bietet mehrere Tools auf unterschiedlichen Abstraktionsebenen zur Implementierung dieser Sicherheitsfunktionen.
 
 In diesem Beispiel verwenden wir **OAuth2** mit dem **Password**-Flow und einem **Bearer**-Token. Wir machen das mit der Klasse `OAuth2PasswordBearer`.
 
-/// info
+/// note | Hinweis
 
 Ein „Bearer“-Token ist nicht die einzige Option.
 
@@ -154,43 +132,15 @@ In dem Fall gibt Ihnen **FastAPI** ebenfalls die Tools, die Sie zum Erstellen br
 
 Wenn wir eine Instanz der Klasse `OAuth2PasswordBearer` erstellen, übergeben wir den Parameter `tokenUrl`. Dieser Parameter enthält die URL, die der Client (das Frontend, das im Browser des Benutzers ausgeführt wird) verwendet, wenn er den `username` und das `password` sendet, um einen Token zu erhalten.
 
-//// tab | Python 3.9+
+{* ../../docs_src/security/tutorial001_an_py310.py hl[8] *}
 
-```Python hl_lines="8"
-{!> ../../../docs_src/security/tutorial001_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python  hl_lines="7"
-{!> ../../../docs_src/security/tutorial001_an.py!}
-```
-
-////
-
-//// tab | Python 3.8+ nicht annotiert
-
-/// tip | "Tipp"
-
-Bevorzugen Sie die `Annotated`-Version, falls möglich.
-
-///
-
-```Python hl_lines="6"
-{!> ../../../docs_src/security/tutorial001.py!}
-```
-
-////
-
-/// tip | "Tipp"
+/// tip | Tipp
 
 Hier bezieht sich `tokenUrl="token"` auf eine relative URL `token`, die wir noch nicht erstellt haben. Da es sich um eine relative URL handelt, entspricht sie `./token`.
 
 Da wir eine relative URL verwenden, würde sich das, wenn sich Ihre API unter `https://example.com/` befindet, auf `https://example.com/token` beziehen. Wenn sich Ihre API jedoch unter `https://example.com/api/v1/` befände, würde es sich auf `https://example.com/api/v1/token` beziehen.
 
-Die Verwendung einer relativen URL ist wichtig, um sicherzustellen, dass Ihre Anwendung auch in einem fortgeschrittenen Anwendungsfall, wie [hinter einem Proxy](../../advanced/behind-a-proxy.md){.internal-link target=_blank}, weiterhin funktioniert.
+Die Verwendung einer relativen URL ist wichtig, um sicherzustellen, dass Ihre Anwendung auch in einem fortgeschrittenen Anwendungsfall, wie [Hinter einem Proxy](../../advanced/behind-a-proxy.md), weiterhin funktioniert.
 
 ///
 
@@ -198,7 +148,7 @@ Dieser Parameter erstellt nicht diesen Endpunkt / diese *Pfadoperation*, sondern
 
 Wir werden demnächst auch die eigentliche Pfadoperation erstellen.
 
-/// info
+/// note | Hinweis
 
 Wenn Sie ein sehr strenger „Pythonista“ sind, missfällt Ihnen möglicherweise die Schreibweise des Parameternamens `tokenUrl` anstelle von `token_url`.
 
@@ -216,45 +166,17 @@ oauth2_scheme(some, parameters)
 
 Es kann also mit `Depends` verwendet werden.
 
-### Verwendung
+### Verwenden { #use-it }
 
 Jetzt können Sie dieses `oauth2_scheme` als Abhängigkeit `Depends` übergeben.
 
-//// tab | Python 3.9+
-
-```Python hl_lines="12"
-{!> ../../../docs_src/security/tutorial001_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python  hl_lines="11"
-{!> ../../../docs_src/security/tutorial001_an.py!}
-```
-
-////
-
-//// tab | Python 3.8+ nicht annotiert
-
-/// tip | "Tipp"
-
-Bevorzugen Sie die `Annotated`-Version, falls möglich.
-
-///
-
-```Python hl_lines="10"
-{!> ../../../docs_src/security/tutorial001.py!}
-```
-
-////
+{* ../../docs_src/security/tutorial001_an_py310.py hl[12] *}
 
 Diese Abhängigkeit stellt einen `str` bereit, der dem Parameter `token` der *Pfadoperation-Funktion* zugewiesen wird.
 
 **FastAPI** weiß, dass es diese Abhängigkeit verwenden kann, um ein „Sicherheitsschema“ im OpenAPI-Schema (und der automatischen API-Dokumentation) zu definieren.
 
-/// info | "Technische Details"
+/// note | Technische Details
 
 **FastAPI** weiß, dass es die Klasse `OAuth2PasswordBearer` (deklariert in einer Abhängigkeit) verwenden kann, um das Sicherheitsschema in OpenAPI zu definieren, da es von `fastapi.security.oauth2.OAuth2` erbt, das wiederum von `fastapi.security.base.SecurityBase` erbt.
 
@@ -262,11 +184,11 @@ Alle Sicherheits-Werkzeuge, die in OpenAPI integriert sind (und die automatische
 
 ///
 
-## Was es macht
+## Was es macht { #what-it-does }
 
-FastAPI wird im Request nach diesem `Authorization`-Header suchen, prüfen, ob der Wert `Bearer` plus ein Token ist, und den Token als `str` zurückgeben.
+FastAPI wird im <abbr title="Request – Anfrage: Daten, die der Client zum Server sendet">Request</abbr> nach diesem `Authorization`-Header suchen, prüfen, ob der Wert `Bearer ` plus ein Token ist, und den Token als `str` zurückgeben.
 
-Wenn es keinen `Authorization`-Header sieht, oder der Wert keinen `Bearer`-Token hat, antwortet es direkt mit einem 401-Statuscode-Error (`UNAUTHORIZED`).
+Wenn es keinen `Authorization`-Header sieht, oder der Wert keinen `Bearer `-Token hat, antwortet es direkt mit einem 401-Statuscode-Error (`UNAUTHORIZED`).
 
 Sie müssen nicht einmal prüfen, ob der Token existiert, um einen Fehler zurückzugeben. Seien Sie sicher, dass Ihre Funktion, wenn sie ausgeführt wird, ein `str` in diesem Token enthält.
 
@@ -276,6 +198,6 @@ Sie können das bereits in der interaktiven Dokumentation ausprobieren:
 
 Wir überprüfen im Moment noch nicht die Gültigkeit des Tokens, aber das ist bereits ein Anfang.
 
-## Zusammenfassung
+## Zusammenfassung { #recap }
 
-Mit nur drei oder vier zusätzlichen Zeilen haben Sie also bereits eine primitive Form der Sicherheit.
+Mit nur drei oder vier zusätzlichen Zeilen haben Sie so bereits eine primitive Form der Sicherheit.

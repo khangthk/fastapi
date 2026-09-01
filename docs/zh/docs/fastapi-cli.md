@@ -1,87 +1,138 @@
-# FastAPI CLI
+# FastAPI CLI { #fastapi-cli }
 
-**FastAPI CLI** 是一个命令行程序，你可以用它来部署和运行你的 FastAPI 应用程序，管理你的 FastAPI 项目，等等。
+**FastAPI <abbr title="command line interface - 命令行接口">CLI</abbr>** 是一个命令行程序，你可以用它来部署和运行你的 FastAPI 应用、管理 FastAPI 项目，等等。
 
-当你安装 FastAPI 时（例如使用 `pip install FastAPI` 命令），会包含一个名为 `fastapi-cli` 的软件包，该软件包在终端中提供 `fastapi` 命令。
+当你将 FastAPI 添加到你的项目中（例如使用 `uv add "fastapi[standard]"`）时，会附带一个可以在终端中运行的命令行程序。
 
-要在开发环境中运行你的 FastAPI 应用，你可以使用 `fastapi dev` 命令：
+要在开发环境中运行你的 FastAPI 应用，可以使用 `fastapi dev` 命令：
 
 <div class="termy">
 
 ```console
-$ <font color="#4E9A06">fastapi</font> dev <u style="text-decoration-style:single">main.py</u>
-<font color="#3465A4">INFO    </font> Using path <font color="#3465A4">main.py</font>
-<font color="#3465A4">INFO    </font> Resolved absolute path <font color="#75507B">/home/user/code/awesomeapp/</font><font color="#AD7FA8">main.py</font>
-<font color="#3465A4">INFO    </font> Searching for package file structure from directories with <font color="#3465A4">__init__.py</font> files
-<font color="#3465A4">INFO    </font> Importing from <font color="#75507B">/home/user/code/</font><font color="#AD7FA8">awesomeapp</font>
+$ <font color="#4E9A06">fastapi</font> dev
 
- ╭─ <font color="#8AE234"><b>Python module file</b></font> ─╮
- │                      │
- │  🐍 main.py          │
- │                      │
- ╰──────────────────────╯
+  <span style="background-color:#009485"><font color="#D3D7CF"> FastAPI </font></span>  Starting development server 🚀
 
-<font color="#3465A4">INFO    </font> Importing module <font color="#4E9A06">main</font>
-<font color="#3465A4">INFO    </font> Found importable FastAPI app
+             Searching for package file structure from directories with
+             <font color="#3465A4">__init__.py</font> files
+             Importing from <font color="#75507B">/home/user/code/</font><font color="#AD7FA8">awesomeapp</font>
 
- ╭─ <font color="#8AE234"><b>Importable FastAPI app</b></font> ─╮
- │                          │
- │  <span style="background-color:#272822"><font color="#FF4689">from</font></span><span style="background-color:#272822"><font color="#F8F8F2"> main </font></span><span style="background-color:#272822"><font color="#FF4689">import</font></span><span style="background-color:#272822"><font color="#F8F8F2"> app</font></span><span style="background-color:#272822">  </span>  │
- │                          │
- ╰──────────────────────────╯
+   <span style="background-color:#007166"><font color="#D3D7CF"> module </font></span>  🐍 main.py
 
-<font color="#3465A4">INFO    </font> Using import string <font color="#8AE234"><b>main:app</b></font>
+     <span style="background-color:#007166"><font color="#D3D7CF"> code </font></span>  Importing the FastAPI app object from the module with the
+             following code:
 
- <span style="background-color:#C4A000"><font color="#2E3436">╭────────── FastAPI CLI - Development mode ───────────╮</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│  Serving at: http://127.0.0.1:8000                  │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│  API docs: http://127.0.0.1:8000/docs               │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│  Running in development mode, for production use:   │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│  </font></span><span style="background-color:#C4A000"><font color="#555753"><b>fastapi run</b></font></span><span style="background-color:#C4A000"><font color="#2E3436">                                        │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">╰─────────────────────────────────────────────────────╯</font></span>
+             <u style="text-decoration-style:solid">from </u><u style="text-decoration-style:solid"><b>main</b></u><u style="text-decoration-style:solid"> import </u><u style="text-decoration-style:solid"><b>app</b></u>
 
-<font color="#4E9A06">INFO</font>:     Will watch for changes in these directories: [&apos;/home/user/code/awesomeapp&apos;]
-<font color="#4E9A06">INFO</font>:     Uvicorn running on <b>http://127.0.0.1:8000</b> (Press CTRL+C to quit)
-<font color="#4E9A06">INFO</font>:     Started reloader process [<font color="#34E2E2"><b>2265862</b></font>] using <font color="#34E2E2"><b>WatchFiles</b></font>
-<font color="#4E9A06">INFO</font>:     Started server process [<font color="#06989A">2265873</font>]
-<font color="#4E9A06">INFO</font>:     Waiting for application startup.
-<font color="#4E9A06">INFO</font>:     Application startup complete.
+      <span style="background-color:#007166"><font color="#D3D7CF"> app </font></span>  Using import string: <font color="#3465A4">main:app</font>
+
+   <span style="background-color:#007166"><font color="#D3D7CF"> server </font></span>  Server started at <font color="#729FCF"><u style="text-decoration-style:solid">http://127.0.0.1:8000</u></font>
+   <span style="background-color:#007166"><font color="#D3D7CF"> server </font></span>  Documentation at <font color="#729FCF"><u style="text-decoration-style:solid">http://127.0.0.1:8000/docs</u></font>
+
+      <span style="background-color:#007166"><font color="#D3D7CF"> tip </font></span>  Running in development mode, for production use:
+             <b>fastapi run</b>
+
+             Logs:
+
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Will watch for changes in these directories:
+             <b>[</b><font color="#4E9A06">&apos;/home/user/code/awesomeapp&apos;</font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Uvicorn running on <font color="#729FCF"><u style="text-decoration-style:solid">http://127.0.0.1:8000</u></font> <b>(</b>Press CTRL+C to
+             quit<b>)</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started reloader process <b>[</b><font color="#34E2E2"><b>383138</b></font><b>]</b> using WatchFiles
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started server process <b>[</b><font color="#34E2E2"><b>383153</b></font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Waiting for application startup.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Application startup complete.
 ```
 
 </div>
 
-该命令行程序 `fastapi` 就是 **FastAPI CLI**。
+/// tip | 提示
 
-FastAPI CLI 接收你的 Python 程序路径，自动检测包含 FastAPI 的变量（通常命名为 `app`）及其导入方式，然后启动服务。
+在生产环境中，你会使用 `fastapi run` 而不是 `fastapi dev`。🚀
 
-在生产环境中，你应该使用 `fastapi run` 命令。🚀
+///
 
-在内部，**FastAPI CLI** 使用了 <a href="https://www.uvicorn.org" class="external-link" target="_blank">Uvicorn</a>，这是一个高性能、适用于生产环境的 ASGI 服务器。😎
+在内部，**FastAPI CLI** 使用 [Uvicorn](https://uvicorn.dev)，这是一个高性能、适用于生产环境的 ASGI 服务器。😎
 
-## `fastapi dev`
+`fastapi` CLI 会尝试自动检测要运行的 FastAPI 应用，默认假设它是文件 `main.py` 中名为 `app` 的对象（或少数其他变体）。
 
-当你运行 `fastapi dev` 时，它将以开发模式运行。
+但你也可以显式配置要使用的应用。
 
-默认情况下，它会启用**自动重载**，因此当你更改代码时，它会自动重新加载服务器。该功能是资源密集型的，且相较不启用时更不稳定，因此你应该仅在开发环境下使用它。
+## 在 `pyproject.toml` 中配置应用的 `entrypoint` { #configure-the-app-entrypoint-in-pyproject-toml }
 
-默认情况下，它将监听 IP 地址 `127.0.0.1`，这是你的机器与自身通信的 IP 地址（`localhost`）。
+你可以在 `pyproject.toml` 文件中配置应用的位置，例如：
 
-## `fastapi run`
+```toml
+[tool.fastapi]
+entrypoint = "main:app"
+```
 
-当你运行 `fastapi run` 时，它默认以生产环境模式运行。
+这个 `entrypoint` 会告诉 `fastapi` 命令按如下方式导入应用：
 
-默认情况下，**自动重载是禁用的**。
+```python
+from main import app
+```
 
-它将监听 IP 地址 `0.0.0.0`，即所有可用的 IP 地址，这样任何能够与该机器通信的人都可以公开访问它。这通常是你在生产环境中运行它的方式，例如在容器中运行。
+如果你的代码结构如下：
+
+```
+.
+├── backend
+│   ├── main.py
+│   ├── __init__.py
+```
+
+那么你可以将 `entrypoint` 设置为：
+
+```toml
+[tool.fastapi]
+entrypoint = "backend.main:app"
+```
+
+这等价于：
+
+```python
+from backend.main import app
+```
+
+### 带路径或使用 `--entrypoint` CLI 选项的 `fastapi dev` { #fastapi-dev-with-path-or-with-entrypoint-cli-option }
+
+你也可以把文件路径传给 `fastapi dev` 命令，它会猜测要使用的 FastAPI 应用对象：
+
+```console
+$ uv run fastapi dev main.py
+```
+
+或者，你也可以给 `fastapi dev` 命令传入 `--entrypoint` 选项：
+
+```console
+$ uv run fastapi dev --entrypoint main:app
+```
+
+但每次运行 `fastapi` 命令都需要记得传入正确的路径\entrypoint。
+
+另外，其他工具可能找不到它，例如 [VS Code 扩展](editor-support.md) 或 [FastAPI Cloud](https://fastapicloud.com)，因此推荐在 `pyproject.toml` 中使用 `entrypoint`。
+
+## `fastapi dev` { #fastapi-dev }
+
+运行 `fastapi dev` 会启动开发模式。
+
+默认情况下，它会启用**自动重载**，因此当你更改代码时，它会自动重新加载服务器。该功能是资源密集型的，且相较不启用时更不稳定，因此你应该仅在开发环境下使用它。它还会监听 IP 地址 `127.0.0.1`，这是你的机器仅与自身通信的 IP（`localhost`）。
+
+在导入你的应用之前，`fastapi dev` 会将 `FASTAPI_ENV` 环境变量设置为 `development`。如果 `FASTAPI_ENV` 已经设置，则会保留其现有值。这让应用启动代码可以选择适合开发的行为，同时允许你提供应用特定的环境，例如 `staging`。
+
+约定的 `FASTAPI_ENV` 值是 `development` 和 `production`。`fastapi run` 目前会保持 `FASTAPI_ENV` 不变，因此如果你的应用需要检测生产模式，请显式设置它。
+
+## `fastapi run` { #fastapi-run }
+
+执行 `fastapi run` 会以生产模式启动 FastAPI。
+
+默认情况下，**自动重载是禁用的**。它将监听 IP 地址 `0.0.0.0`，即所有可用的 IP 地址，这样任何能够与该机器通信的人都可以公开访问它。这通常是你在生产环境中运行它的方式，例如在容器中运行。
 
 在大多数情况下，你会（且应该）有一个“终止代理”在上层为你处理 HTTPS，这取决于你如何部署应用程序，你的服务提供商可能会为你处理此事，或者你可能需要自己设置。
 
-/// tip | "提示"
+/// tip | 提示
 
-你可以在 [deployment documentation](deployment/index.md){.internal-link target=_blank} 获得更多信息。
+你可以在[部署文档](deployment/index.md)中了解更多。
 
 ///

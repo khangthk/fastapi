@@ -1,34 +1,34 @@
-# リクエストフォームとファイル
+# リクエストフォームとファイル { #request-forms-and-files }
 
 `File`と`Form`を同時に使うことでファイルとフォームフィールドを定義することができます。
 
-/// info | "情報"
+/// note | 備考
 
-アップロードされたファイルやフォームデータを受信するには、まず<a href="https://andrew-d.github.io/python-multipart/" class="external-link" target="_blank">`python-multipart`</a>をインストールします。
+アップロードされたファイルおよび/またはフォームデータを受信するには、まず[`python-multipart`](https://github.com/Kludex/python-multipart)をインストールします。
 
-例えば、`pip install python-multipart`のように。
+プロジェクトに追加します:
+
+```console
+$ uv add python-multipart
+```
 
 ///
 
-## `File`と`Form`のインポート
+## `File`と`Form`のインポート { #import-file-and-form }
 
-```Python hl_lines="1"
-{!../../../docs_src/request_forms_and_files/tutorial001.py!}
-```
+{* ../../docs_src/request_forms_and_files/tutorial001_an_py310.py hl[3] *}
 
-## `File`と`Form`のパラメータの定義
+## `File`と`Form`のパラメータの定義 { #define-file-and-form-parameters }
 
 ファイルやフォームのパラメータは`Body`や`Query`の場合と同じように作成します:
 
-```Python hl_lines="8"
-{!../../../docs_src/request_forms_and_files/tutorial001.py!}
-```
+{* ../../docs_src/request_forms_and_files/tutorial001_an_py310.py hl[10:12] *}
 
 ファイルとフォームフィールドがフォームデータとしてアップロードされ、ファイルとフォームフィールドを受け取ります。
 
 また、いくつかのファイルを`bytes`として、いくつかのファイルを`UploadFile`として宣言することができます。
 
-/// warning | "注意"
+/// warning | 注意
 
 *path operation*で複数の`File`と`Form`パラメータを宣言することができますが、JSONとして受け取ることを期待している`Body`フィールドを宣言することはできません。なぜなら、リクエストのボディは`application/json`の代わりに`multipart/form-data`を使ってエンコードされているからです。
 
@@ -36,6 +36,6 @@
 
 ///
 
-## まとめ
+## まとめ { #recap }
 
 同じリクエストでデータやファイルを受け取る必要がある場合は、`File` と`Form`を一緒に使用します。

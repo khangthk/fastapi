@@ -1,35 +1,93 @@
-# Configurações e Variáveis de Ambiente
+# Configurações e Variáveis de Ambiente { #settings-and-environment-variables }
 
-Em muitos casos a sua aplicação pode precisar de configurações externas, como chaves secretas, credenciais de banco de dados, credenciais para serviços de email, etc.
+Em muitos casos, sua aplicação pode precisar de configurações externas, por exemplo chaves secretas, credenciais de banco de dados, credenciais para serviços de e-mail, etc.
 
-A maioria dessas configurações é variável (podem mudar), como URLs de bancos de dados. E muitas delas podem conter dados sensíveis, como tokens secretos.
+A maioria dessas configurações é variável (pode mudar), como URLs de banco de dados. E muitas podem ser sensíveis, como segredos.
 
-Por isso é comum prover essas configurações como variáveis de ambiente que são utilizidas pela aplicação.
+Por esse motivo, é comum fornecê-las em variáveis de ambiente lidas pela aplicação.
 
-## Variáveis de Ambiente
+Uma **variável de ambiente** (também conhecida como **env var**) é um valor que existe fora do código Python, no sistema operacional, e pode ser lido pela sua aplicação e por outros programas.
 
-/// dica
+Você pode criar uma variável de ambiente para um comando ao executá-lo. Você verá os comandos específicos de cada plataforma abaixo.
 
-Se você já sabe o que são variáveis de ambiente e como utilizá-las, sinta-se livre para avançar para o próximo tópico.
+/// tip | Dica
+
+Leia o [guia de Variáveis de Ambiente](https://tiangolo.com/guides/environment-variables/) para uma explicação detalhada de como variáveis de ambiente funcionam.
 
 ///
 
-Uma <a href="https://pt.wikipedia.org/wiki/Variável_de_ambiente" class="external-link" target="_blank">variável de ambiente</a> (abreviada em inglês para "env var") é uma variável definida fora do código Python, no sistema operacional, e pode ser lida pelo seu código Python (ou por outros programas).
+## Tipagem e validação { #types-and-validation }
 
-Você pode criar e utilizar variáveis de ambiente no terminal, sem precisar utilizar Python:
+Essas variáveis de ambiente só conseguem lidar com strings de texto, pois são externas ao Python e precisam ser compatíveis com outros programas e com o resto do sistema (e até com diferentes sistemas operacionais, como Linux, Windows e macOS).
+
+Isso significa que qualquer valor lido em Python a partir de uma variável de ambiente será uma `str`, e qualquer conversão para um tipo diferente ou validação precisa ser feita em código.
+
+## Pydantic `Settings` { #pydantic-settings }
+
+Felizmente, o Pydantic fornece uma ótima utilidade para lidar com essas configurações vindas de variáveis de ambiente com [Pydantic: Settings management](https://pydantic.dev/docs/validation/latest/concepts/pydantic_settings/).
+
+### Instalar `pydantic-settings` { #install-pydantic-settings }
+
+Adicione o pacote `pydantic-settings` ao seu projeto:
+
+<div class="termy">
+
+```console
+$ uv add pydantic-settings
+---> 100%
+```
+
+</div>
+
+Ele também vem incluído quando você instala os extras `all` com:
+
+<div class="termy">
+
+```console
+$ uv add "fastapi[all]"
+---> 100%
+```
+
+</div>
+
+### Criar o objeto `Settings` { #create-the-settings-object }
+
+Importe `BaseSettings` do Pydantic e crie uma subclasse, muito parecido com um modelo do Pydantic.
+
+Da mesma forma que com modelos do Pydantic, você declara atributos de classe com anotações de tipo e, possivelmente, valores padrão.
+
+Você pode usar as mesmas funcionalidades e ferramentas de validação que usa em modelos do Pydantic, como diferentes tipos de dados e validações adicionais com `Field()`.
+
+{* ../../docs_src/settings/tutorial001_py310.py hl[2,5:8,11] *}
+
+/// tip | Dica
+
+Se você quer algo rápido para copiar e colar, não use este exemplo, use o último abaixo.
+
+///
+
+Então, quando você cria uma instância dessa classe `Settings` (neste caso, no objeto `settings`), o Pydantic vai ler as variáveis de ambiente sem diferenciar maiúsculas de minúsculas; assim, uma variável em maiúsculas `APP_NAME` ainda será lida para o atributo `app_name`.
+
+Em seguida, ele converterá e validará os dados. Assim, quando você usar esse objeto `settings`, terá dados dos tipos que declarou (por exemplo, `items_per_user` será um `int`).
+
+### Usar o `settings` { #use-the-settings }
+
+Depois você pode usar o novo objeto `settings` na sua aplicação:
+
+{* ../../docs_src/settings/tutorial001_py310.py hl[18:20] *}
+
+### Executar o servidor { #run-the-server }
+
+Em seguida, você executaria o servidor passando as configurações como variáveis de ambiente, por exemplo, você poderia definir `ADMIN_EMAIL` e `APP_NAME` com:
 
 //// tab | Linux, macOS, Windows Bash
 
 <div class="termy">
 
 ```console
-// Você pode criar uma env var MY_NAME usando
-$ export MY_NAME="Wade Wilson"
+$ ADMIN_EMAIL="deadpool@example.com" APP_NAME="ChimichangApp" uv run fastapi run main.py
 
-// E utilizá-la em outros programas, como
-$ echo "Hello $MY_NAME"
-
-Hello Wade Wilson
+<span style="color: green;">INFO</span>:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ```
 
 </div>
@@ -41,466 +99,168 @@ Hello Wade Wilson
 <div class="termy">
 
 ```console
-// Criando env var MY_NAME
-$ $Env:MY_NAME = "Wade Wilson"
-
-// Usando em outros programas, como
-$ echo "Hello $Env:MY_NAME"
-
-Hello Wade Wilson
-```
-
-</div>
-
-////
-
-### Lendo variáveis de ambiente com Python
-
-Você também pode criar variáveis de ambiente fora do Python, no terminal (ou com qualquer outro método), e realizar a leitura delas no Python.
-
-Por exemplo, você pode definir um arquivo `main.py` com o seguinte código:
-
-```Python hl_lines="3"
-import os
-
-name = os.getenv("MY_NAME", "World")
-print(f"Hello {name} from Python")
-```
-
-/// dica
-
-O segundo parâmetro em <a href="https://docs.python.org/3.8/library/os.html#os.getenv" class="external-link" target="_blank">`os.getenv()`</a> é o valor padrão para o retorno.
-
-Se nenhum valor for informado, `None` é utilizado por padrão, aqui definimos `"World"` como o valor padrão a ser utilizado.
-
-///
-
-E depois você pode executar esse arquivo:
-
-<div class="termy">
-
-```console
-// Aqui ainda não definimos a env var
-$ python main.py
-
-// Por isso obtemos o valor padrão
-
-Hello World from Python
-
-// Mas se definirmos uma variável de ambiente primeiro
-$ export MY_NAME="Wade Wilson"
-
-// E executarmos o programa novamente
-$ python main.py
-
-// Agora ele pode ler a variável de ambiente
-
-Hello Wade Wilson from Python
-```
-
-</div>
-
-Como variáveis de ambiente podem ser definidas fora do código da aplicação, mas acessadas pela aplicação, e não precisam ser armazenadas (versionadas com `git`) junto dos outros arquivos, é comum utilizá-las para guardar configurações.
-
-Você também pode criar uma variável de ambiente específica para uma invocação de um programa, que é acessível somente para esse programa, e somente enquanto ele estiver executando.
-
-Para fazer isso, crie a variável imediatamente antes de iniciar o programa, na mesma linha:
-
-<div class="termy">
-
-```console
-// Criando uma env var MY_NAME na mesma linha da execução do programa
-$ MY_NAME="Wade Wilson" python main.py
-
-// Agora a aplicação consegue ler a variável de ambiente
-
-Hello Wade Wilson from Python
-
-// E a variável deixa de existir após isso
-$ python main.py
-
-Hello World from Python
-```
-
-</div>
-
-/// dica
-
-Você pode ler mais sobre isso em: <a href="https://12factor.net/pt_br/config" class="external-link" target="_blank">The Twelve-Factor App: Configurações</a>.
-
-///
-
-### Tipagem e Validação
-
-Essas variáveis de ambiente suportam apenas strings, por serem externas ao Python e por que precisam ser compatíveis com outros programas e o resto do sistema (e até mesmo com outros sistemas operacionais, como Linux, Windows e macOS).
-
-Isso significa que qualquer valor obtido de uma variável de ambiente em Python terá o tipo `str`, e qualquer conversão para um tipo diferente ou validação deve ser realizada no código.
-
-## Pydantic `Settings`
-
-Por sorte, o Pydantic possui uma funcionalidade para lidar com essas configurações vindas de variáveis de ambiente utilizando <a href="https://docs.pydantic.dev/latest/usage/pydantic_settings/" class="external-link" target="_blank">Pydantic: Settings management</a>.
-
-### Instalando `pydantic-settings`
-
-Primeiro, instale o pacote `pydantic-settings`:
-
-<div class="termy">
-
-```console
-$ pip install pydantic-settings
----> 100%
-```
-
-</div>
-
-Ele também está incluído no fastapi quando você instala com a opção `all`:
-
-<div class="termy">
-
-```console
-$ pip install "fastapi[all]"
----> 100%
-```
-
-</div>
-
-/// info
-
-Na v1 do Pydantic ele estava incluído no pacote principal. Agora ele está distribuido como um pacote independente para que você possa optar por instalar ou não caso você não precise dessa funcionalidade.
-
-///
-
-### Criando o objeto `Settings`
-
-Importe a classe `BaseSettings` do Pydantic e crie uma nova subclasse, de forma parecida com um modelo do Pydantic.
-
-Os atributos da classe são declarados com anotações de tipo, e possíveis valores padrão, da mesma maneira que os modelos do Pydantic.
-
-Você pode utilizar todas as ferramentas e funcionalidades de validação que são utilizadas nos modelos do Pydantic, como tipos de dados diferentes e validações adicionei com `Field()`.
-
-//// tab | Pydantic v2
-
-```Python hl_lines="2  5-8  11"
-{!> ../../../docs_src/settings/tutorial001.py!}
-```
-
-////
-
-//// tab | Pydantic v1
-
-/// info
-
-Na versão 1 do Pydantic você importaria `BaseSettings` diretamente do módulo `pydantic` em vez do módulo `pydantic_settings`.
-
-///
-
-```Python hl_lines="2  5-8  11"
-{!> ../../../docs_src/settings/tutorial001_pv1.py!}
-```
-
-////
-
-/// dica
-
-Se você quiser algo pronto para copiar e colar na sua aplicação, não use esse exemplo, mas sim o exemplo abaixo.
-
-///
-
-Portanto, quando você cria uma instância da classe `Settings` (nesse caso, o objeto `settings`), o Pydantic lê as variáveis de ambiente sem diferenciar maiúsculas e minúsculas, por isso, uma variável maiúscula `APP_NAME` será usada para o atributo `app_name`.
-
-Depois ele irá converter e validar os dados. Assim, quando você utilizar aquele objeto `settings`, os dados terão o tipo que você declarou (e.g. `items_per_user` será do tipo `int`).
-
-### Usando o objeto `settings`
-
-Depois, Você pode utilizar o novo objeto `settings` na sua aplicação:
-
-```Python hl_lines="18-20"
-{!../../../docs_src/settings/tutorial001.py!}
-```
-
-### Executando o servidor
-
-No próximo passo, você pode inicializar o servidor passando as configurações em forma de variáveis de ambiente, por exemplo, você poderia definir `ADMIN_EMAIL` e `APP_NAME` da seguinte forma:
-
-<div class="termy">
-
-```console
-$ ADMIN_EMAIL="deadpool@example.com" APP_NAME="ChimichangApp" fastapi run main.py
+$ $Env:ADMIN_EMAIL = "deadpool@example.com"
+$ $Env:APP_NAME = "ChimichangApp"
+$ uv run fastapi run main.py
 
 <span style="color: green;">INFO</span>:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ```
 
 </div>
 
-/// dica
-
-Para definir múltiplas variáveis de ambiente para um único comando basta separá-las utilizando espaços, e incluir todas elas antes do comando.
-
-///
-
-Assim, o atributo `admin_email` seria definido como `"deadpool@example.com"`.
-
-`app_name` seria `"ChimichangApp"`.
-
-E `items_per_user` manteria o valor padrão de `50`.
-
-## Configurações em um módulo separado
-
-Você também pode incluir essas configurações em um arquivo de um módulo separado como visto em [Bigger Applications - Multiple Files](../tutorial/bigger-applications.md){.internal-link target=\_blank}.
-
-Por exemplo, você pode adicionar um arquivo `config.py` com:
-
-```Python
-{!../../../docs_src/settings/app01/config.py!}
-```
-
-E utilizar essa configuração em `main.py`:
-
-```Python hl_lines="3  11-13"
-{!../../../docs_src/settings/app01/main.py!}
-```
-
-/// dica
-
-Você também precisa incluir um arquivo `__init__.py` como visto em [Bigger Applications - Multiple Files](../tutorial/bigger-applications.md){.internal-link target=\_blank}.
-
-///
-
-## Configurações em uma dependência
-
-Em certas ocasiões, pode ser útil fornecer essas configurações a partir de uma dependência, em vez de definir um objeto global `settings` que é utilizado em toda a aplicação.
-
-Isso é especialmente útil durante os testes, já que é bastante simples sobrescrever uma dependência com suas configurações personalizadas.
-
-### O arquivo de configuração
-
-Baseando-se no exemplo anterior, seu arquivo `config.py` seria parecido com isso:
-
-```Python hl_lines="10"
-{!../../../docs_src/settings/app02/config.py!}
-```
-
-Perceba que dessa vez não criamos uma instância padrão `settings = Settings()`.
-
-### O arquivo principal da aplicação
-
-Agora criamos a dependência que retorna um novo objeto `config.Settings()`.
-
-//// tab | Python 3.9+
-
-```Python hl_lines="6  12-13"
-{!> ../../../docs_src/settings/app02_an_py39/main.py!}
-```
-
 ////
 
-//// tab | Python 3.8+
+/// tip | Dica
 
-```Python hl_lines="6  12-13"
-{!> ../../../docs_src/settings/app02_an/main.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// dica
-
-Utilize a versão com `Annotated` se possível.
+No Bash, para definir várias env vars para um único comando, separe-as com espaço e coloque todas antes do comando.
 
 ///
 
-```Python hl_lines="5  11-12"
-{!> ../../../docs_src/settings/app02/main.py!}
-```
+Então a configuração `admin_email` seria definida como `"deadpool@example.com"`.
 
-////
+O `app_name` seria `"ChimichangApp"`.
 
-/// dica
+E `items_per_user` manteria seu valor padrão de `50`.
 
-Vamos discutir sobre `@lru_cache` logo mais.
+## Configurações em outro módulo { #settings-in-another-module }
 
-Por enquanto, você pode considerar `get_settings()` como uma função normal.
+Você pode colocar essas configurações em outro arquivo de módulo como visto em [Aplicações Maiores - Múltiplos Arquivos](../tutorial/bigger-applications.md).
 
-///
+Por exemplo, você poderia ter um arquivo `config.py` com:
 
-E então podemos declarar essas configurações como uma dependência na função de operação da rota e utilizar onde for necessário.
+{* ../../docs_src/settings/app01_py310/config.py *}
 
-//// tab | Python 3.9+
+E então usá-lo em um arquivo `main.py`:
 
-```Python hl_lines="17  19-21"
-{!> ../../../docs_src/settings/app02_an_py39/main.py!}
-```
+{* ../../docs_src/settings/app01_py310/main.py hl[3,11:13] *}
 
-////
+/// tip | Dica
 
-//// tab | Python 3.8+
-
-```Python hl_lines="17  19-21"
-{!> ../../../docs_src/settings/app02_an/main.py!}
-```
-
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// dica
-
-Utilize a versão com `Annotated` se possível.
+Você também precisaria de um arquivo `__init__.py` como visto em [Aplicações Maiores - Múltiplos Arquivos](../tutorial/bigger-applications.md).
 
 ///
 
-```Python hl_lines="16  18-20"
-{!> ../../../docs_src/settings/app02/main.py!}
-```
+## Configurações em uma dependência { #settings-in-a-dependency }
 
-////
+Em algumas ocasiões, pode ser útil fornecer as configurações a partir de uma dependência, em vez de ter um objeto global `settings` usado em todos os lugares.
 
-### Configurações e testes
+Isso pode ser especialmente útil durante os testes, pois é muito fácil sobrescrever uma dependência com suas próprias configurações personalizadas.
 
-Então seria muito fácil fornecer uma configuração diferente durante a execução dos testes sobrescrevendo a dependência de `get_settings`:
+### O arquivo de configuração { #the-config-file }
 
-```Python hl_lines="9-10  13  21"
-{!../../../docs_src/settings/app02/test_main.py!}
-```
+Vindo do exemplo anterior, seu arquivo `config.py` poderia ser assim:
 
-Na sobrescrita da dependência, definimos um novo valor para `admin_email` quando instanciamos um novo objeto `Settings`, e então retornamos esse novo objeto.
+{* ../../docs_src/settings/app02_an_py310/config.py hl[10] *}
 
-Após isso, podemos testar se o valor está sendo utilizado.
+Perceba que agora não criamos uma instância padrão `settings = Settings()`.
 
-## Lendo um arquivo `.env`
+### O arquivo principal da aplicação { #the-main-app-file }
 
-Se você tiver muitas configurações que variem bastante, talvez em ambientes distintos, pode ser útil colocá-las em um arquivo e depois lê-las como se fossem variáveis de ambiente.
+Agora criamos uma dependência que retorna um novo `config.Settings()`.
 
-Essa prática é tão comum que possui um nome, essas variáveis de ambiente normalmente são colocadas em um arquivo `.env`, e esse arquivo é chamado de "dotenv".
+{* ../../docs_src/settings/app02_an_py310/main.py hl[6,12:13] *}
 
-/// dica
+/// tip | Dica
 
-Um arquivo iniciando com um ponto final (`.`) é um arquivo oculto em sistemas baseados em Unix, como Linux e MacOS.
+Vamos discutir o `@lru_cache` em breve.
 
-Mas um arquivo dotenv não precisa ter esse nome exato.
+Por enquanto, você pode assumir que `get_settings()` é uma função normal.
 
 ///
 
-Pydantic suporta a leitura desses tipos de arquivos utilizando uma biblioteca externa. Você pode ler mais em <a href="https://docs.pydantic.dev/latest/concepts/pydantic_settings/#dotenv-env-support" class="external-link" target="_blank">Pydantic Settings: Dotenv (.env) support</a>.
+E então podemos exigi-la na *função de operação de rota* como dependência e usá-la onde for necessário.
 
-/// dica
+{* ../../docs_src/settings/app02_an_py310/main.py hl[17,19:21] *}
 
-Para que isso funcione você precisa executar `pip install python-dotenv`.
+### Configurações e testes { #settings-and-testing }
+
+Então seria muito fácil fornecer um objeto de configurações diferente durante os testes criando uma sobrescrita de dependência para `get_settings`:
+
+{* ../../docs_src/settings/app02_an_py310/test_main.py hl[9:10,13,21] *}
+
+Na sobrescrita da dependência definimos um novo valor para `admin_email` ao criar o novo objeto `Settings`, e então retornamos esse novo objeto.
+
+Depois podemos testar que ele é usado.
+
+## Lendo um arquivo `.env` { #reading-a-env-file }
+
+Se você tiver muitas configurações que possivelmente mudam bastante, talvez em diferentes ambientes, pode ser útil colocá-las em um arquivo e então lê-las como se fossem variáveis de ambiente.
+
+Essa prática é tão comum que tem um nome: essas variáveis de ambiente são comumente colocadas em um arquivo `.env`, e o arquivo é chamado de "dotenv".
+
+/// tip | Dica
+
+Um arquivo começando com um ponto (`.`) é um arquivo oculto em sistemas tipo Unix, como Linux e macOS.
+
+Mas um arquivo dotenv não precisa ter exatamente esse nome de arquivo.
 
 ///
 
-### O arquivo `.env`
+O Pydantic tem suporte para leitura desses tipos de arquivos usando uma biblioteca externa. Você pode ler mais em [Pydantic Settings: suporte a Dotenv (.env)](https://pydantic.dev/docs/validation/latest/concepts/pydantic_settings/#dotenv-env-support).
 
-Você pode definir um arquivo `.env` com o seguinte conteúdo:
+/// tip | Dica
+
+Para isso funcionar, adicione `python-dotenv` ao seu projeto com `uv add python-dotenv`.
+
+///
+
+### O arquivo `.env` { #the-env-file }
+
+Você poderia ter um arquivo `.env` com:
 
 ```bash
 ADMIN_EMAIL="deadpool@example.com"
 APP_NAME="ChimichangApp"
 ```
 
-### Obtendo configurações do `.env`
+### Ler configurações do `.env` { #read-settings-from-env }
 
-E então adicionar o seguinte código em `config.py`:
+E então atualizar seu `config.py` com:
 
-//// tab | Pydantic v2
+{* ../../docs_src/settings/app03_an_py310/config.py hl[9] *}
 
-```Python hl_lines="9"
-{!> ../../../docs_src/settings/app03_an/config.py!}
-```
+/// tip | Dica
 
-/// dica
-
-O atributo `model_config` é usado apenas para configuração do Pydantic. Você pode ler mais em <a href="https://docs.pydantic.dev/latest/usage/model_config/" class="external-link" target="_blank">Pydantic Model Config</a>.
+O atributo `model_config` é usado apenas para configuração do Pydantic. Você pode ler mais em [Pydantic: Conceitos: Configuração](https://pydantic.dev/docs/validation/latest/concepts/config/).
 
 ///
 
-////
+Aqui definimos a configuração `env_file` dentro da sua classe `Settings` do Pydantic e definimos o valor como o nome do arquivo dotenv que queremos usar.
 
-//// tab | Pydantic v1
+### Criando o `Settings` apenas uma vez com `lru_cache` { #creating-the-settings-only-once-with-lru-cache }
 
-```Python hl_lines="9-10"
-{!> ../../../docs_src/settings/app03_an/config_pv1.py!}
-```
+Ler um arquivo do disco normalmente é uma operação custosa (lenta), então você provavelmente vai querer fazer isso apenas uma vez e depois reutilizar o mesmo objeto de configurações, em vez de lê-lo a cada requisição.
 
-/// dica
-
-A classe `Config` é usada apenas para configuração do Pydantic. Você pode ler mais em <a href="https://docs.pydantic.dev/1.10/usage/model_config/" class="external-link" target="_blank">Pydantic Model Config</a>.
-
-///
-
-////
-
-/// info
-
-Na versão 1 do Pydantic a configuração é realizada por uma classe interna `Config`, na versão 2 do Pydantic isso é feito com o atributo `model_config`. Esse atributo recebe um `dict`, para utilizar o autocomplete e checagem de erros do seu editor de texto você pode importar e utilizar `SettingsConfigDict` para definir esse `dict`.
-
-///
-
-Aqui definimos a configuração `env_file` dentro da classe `Settings` do Pydantic, e definimos o valor como o nome do arquivo dotenv que queremos utilizar.
-
-### Declarando `Settings` apenas uma vez com `lru_cache`
-
-Ler o conteúdo de um arquivo em disco normalmente é uma operação custosa (lenta), então você provavelmente quer fazer isso apenas um vez e reutilizar o mesmo objeto settings depois, em vez de ler os valores a cada requisição.
-
-Mas cada vez que fazemos:
+Mas toda vez que fizermos:
 
 ```Python
 Settings()
 ```
 
-um novo objeto `Settings` é instanciado, e durante a instanciação, o arquivo `.env` é lido novamente.
+um novo objeto `Settings` seria criado e, na criação, ele leria o arquivo `.env` novamente.
 
-Se a função da dependência fosse apenas:
+Se a função de dependência fosse assim:
 
 ```Python
 def get_settings():
     return Settings()
 ```
 
-Iriamos criar um novo objeto a cada requisição, e estaríamos lendo o arquivo `.env` a cada requisição. ⚠️
+criaríamos esse objeto para cada requisição e leríamos o arquivo `.env` para cada requisição. ⚠️
 
-Mas como estamos utilizando o decorador `@lru_cache` acima, o objeto `Settings` é criado apenas uma vez, na primeira vez que a função é chamada. ✔️
+Mas como estamos usando o decorador `@lru_cache` por cima, o objeto `Settings` será criado apenas uma vez, na primeira vez em que for chamado. ✔️
 
-//// tab | Python 3.9+
+{* ../../docs_src/settings/app03_an_py310/main.py hl[1,11] *}
 
-```Python hl_lines="1  11"
-{!> ../../../docs_src/settings/app03_an_py39/main.py!}
-```
+Em qualquer chamada subsequente de `get_settings()` nas dependências das próximas requisições, em vez de executar o código interno de `get_settings()` e criar um novo objeto `Settings`, ele retornará o mesmo objeto que foi retornado na primeira chamada, repetidamente.
 
-////
+#### Detalhes Técnicos do `lru_cache` { #lru-cache-technical-details }
 
-//// tab | Python 3.8+
+`@lru_cache` modifica a função que decora para retornar o mesmo valor que foi retornado na primeira vez, em vez de calculá-lo novamente executando o código da função todas as vezes.
 
-```Python hl_lines="1  11"
-{!> ../../../docs_src/settings/app03_an/main.py!}
-```
+Assim, a função abaixo dele será executada uma vez para cada combinação de argumentos. E então os valores retornados para cada uma dessas combinações de argumentos serão usados repetidamente sempre que a função for chamada com exatamente a mesma combinação de argumentos.
 
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// dica
-
-Utilize a versão com `Annotated` se possível.
-
-///
-
-```Python hl_lines="1  10"
-{!> ../../../docs_src/settings/app03/main.py!}
-```
-
-////
-
-Dessa forma, todas as chamadas da função `get_settings()` nas dependências das próximas requisições, em vez de executar o código interno de `get_settings()` e instanciar um novo objeto `Settings`, irão retornar o mesmo objeto que foi retornado na primeira chamada, de novo e de novo.
-
-#### Detalhes Técnicos de `lru_cache`
-
-`@lru_cache` modifica a função decorada para retornar o mesmo valor que foi retornado na primeira vez, em vez de calculá-lo novamente, executando o código da função toda vez.
-
-Assim, a função abaixo do decorador é executada uma única vez para cada combinação dos argumentos passados. E os valores retornados para cada combinação de argumentos são sempre reutilizados para cada nova chamada da função com a mesma combinação de argumentos.
-
-Por exemplo, se você definir uma função:
+Por exemplo, se você tiver uma função:
 
 ```Python
 @lru_cache
@@ -508,59 +268,59 @@ def say_hi(name: str, salutation: str = "Ms."):
     return f"Hello {salutation} {name}"
 ```
 
-Seu programa poderia executar dessa forma:
+seu programa poderia executar assim:
 
 ```mermaid
 sequenceDiagram
 
-participant code as Código
+participant code as Code
 participant function as say_hi()
-participant execute as Executar Função
+participant execute as Execute function
 
     rect rgba(0, 255, 0, .1)
         code ->> function: say_hi(name="Camila")
-        function ->> execute: executar código da função
-        execute ->> code: retornar o resultado
+        function ->> execute: execute function code
+        execute ->> code: return the result
     end
 
     rect rgba(0, 255, 255, .1)
         code ->> function: say_hi(name="Camila")
-        function ->> code: retornar resultado armazenado
+        function ->> code: return stored result
     end
 
     rect rgba(0, 255, 0, .1)
         code ->> function: say_hi(name="Rick")
-        function ->> execute: executar código da função
-        execute ->> code: retornar o resultado
+        function ->> execute: execute function code
+        execute ->> code: return the result
     end
 
     rect rgba(0, 255, 0, .1)
         code ->> function: say_hi(name="Rick", salutation="Mr.")
-        function ->> execute: executar código da função
-        execute ->> code: retornar o resultado
+        function ->> execute: execute function code
+        execute ->> code: return the result
     end
 
     rect rgba(0, 255, 255, .1)
         code ->> function: say_hi(name="Rick")
-        function ->> code: retornar resultado armazenado
+        function ->> code: return stored result
     end
 
     rect rgba(0, 255, 255, .1)
         code ->> function: say_hi(name="Camila")
-        function ->> code: retornar resultado armazenado
+        function ->> code: return stored result
     end
 ```
 
-No caso da nossa dependência `get_settings()`, a função não recebe nenhum argumento, então ela sempre retorna o mesmo valor.
+No caso da nossa dependência `get_settings()`, a função nem recebe argumentos, então ela sempre retorna o mesmo valor.
 
-Dessa forma, ela se comporta praticamente como uma variável global, mas ao ser utilizada como uma função de uma dependência, pode facilmente ser sobrescrita durante os testes.
+Dessa forma, ela se comporta quase como se fosse apenas uma variável global. Mas como usa uma função de dependência, podemos sobrescrevê-la facilmente para testes.
 
-`@lru_cache` é definido no módulo `functools` que faz parte da biblioteca padrão do Python, você pode ler mais sobre esse decorador no link <a href="https://docs.python.org/3/library/functools.html#functools.lru_cache" class="external-link" target="_blank">Python Docs sobre `@lru_cache`</a>.
+`@lru_cache` faz parte de `functools`, que faz parte da biblioteca padrão do Python; você pode ler mais sobre isso na [documentação do Python para `@lru_cache`](https://docs.python.org/3/library/functools.html#functools.lru_cache).
 
-## Recapitulando
+## Recapitulando { #recap }
 
-Você pode usar o módulo Pydantic Settings para gerenciar as configurações de sua aplicação, utilizando todo o poder dos modelos Pydantic.
+Você pode usar Pydantic Settings para lidar com as definições ou configurações da sua aplicação, com todo o poder dos modelos Pydantic.
 
-- Utilizar dependências simplifica os testes.
-- Você pode utilizar arquivos .env junto das configurações do Pydantic.
-- Utilizar o decorador `@lru_cache` evita que o arquivo .env seja lido de novo e de novo para cada requisição, enquanto permite que você sobrescreva durante os testes.
+* Usando uma dependência você pode simplificar os testes.
+* Você pode usar arquivos `.env` com ele.
+* Usar `@lru_cache` permite evitar ler o arquivo dotenv repetidamente a cada requisição, enquanto permite sobrescrevê-lo durante os testes.

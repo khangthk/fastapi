@@ -1,44 +1,52 @@
-# パスパラメータと数値の検証
+# パスパラメータと数値の検証 { #path-parameters-and-numeric-validations }
 
 クエリパラメータに対して`Query`でより多くのバリデーションとメタデータを宣言できるのと同じように、パスパラメータに対しても`Path`で同じ種類のバリデーションとメタデータを宣言することができます。
 
-## Pathのインポート
+## `Path`のインポート { #import-path }
 
-まず初めに、`fastapi`から`Path`をインポートします:
+まず初めに、`fastapi`から`Path`をインポートし、`Annotated`もインポートします:
 
-```Python hl_lines="1"
-{!../../../docs_src/path_params_numeric_validations/tutorial001.py!}
-```
+{* ../../docs_src/path_params_numeric_validations/tutorial001_an_py310.py hl[1,3] *}
 
-## メタデータの宣言
+/// note | 備考
+
+FastAPI はバージョン 0.95.0 で`Annotated`のサポートを追加し（そして推奨し始めました）。
+
+古いバージョンの場合、`Annotated`を使おうとするとエラーになります。
+
+`Annotated`を使用する前に、FastAPI のバージョンを少なくとも 0.95.1 まで[アップグレードしてください](../deployment/versions.md#upgrading-the-fastapi-versions)。
+
+///
+
+## メタデータの宣言 { #declare-metadata }
 
 パラメータは`Query`と同じものを宣言することができます。
 
 例えば、パスパラメータ`item_id`に対して`title`のメタデータを宣言するには以下のようにします:
 
-```Python hl_lines="8"
-{!../../../docs_src/path_params_numeric_validations/tutorial001.py!}
-```
+{* ../../docs_src/path_params_numeric_validations/tutorial001_an_py310.py hl[10] *}
 
-/// note | "備考"
+/// note | 備考
 
-パスの一部でなければならないので、パスパラメータは常に必須です。
-
-そのため、`...`を使用して必須と示す必要があります。
-
-それでも、`None`で宣言しても、デフォルト値を設定しても、何の影響もなく、常に必要とされていることに変わりはありません。
+パスパラメータはパスの一部でなければならないので、常に必須です。`None`で宣言したりデフォルト値を設定したりしても何も影響せず、常に必須のままです。
 
 ///
 
-## 必要に応じてパラメータを並び替える
+## 必要に応じてパラメータを並び替える { #order-the-parameters-as-you-need }
+
+/// tip | 豆知識
+
+`Annotated`を使う場合、これはおそらくそれほど重要でも必要でもありません。
+
+///
 
 クエリパラメータ`q`を必須の`str`として宣言したいとしましょう。
 
 また、このパラメータには何も宣言する必要がないので、`Query`を使う必要はありません。
 
-しかし、パスパラメータ`item_id`のために`Path`を使用する必要があります。
+しかし、パスパラメータ`item_id`のために`Path`を使用する必要があります。そして何らかの理由で`Annotated`を使いたくないとします。
 
-Pythonは「デフォルト」を持たない値の前に「デフォルト」を持つ値を置くことができません。
+Pythonは「デフォルト」を持つ値を「デフォルト」を持たない値の前に置くとエラーになります。
 
 しかし、それらを並び替えることができ、デフォルト値を持たない値（クエリパラメータ`q`）を最初に持つことができます。
 
@@ -46,79 +54,94 @@ Pythonは「デフォルト」を持たない値の前に「デフォルト」�
 
 そのため、以下のように関数を宣言することができます:
 
-```Python hl_lines="8"
-{!../../../docs_src/path_params_numeric_validations/tutorial002.py!}
-```
+{* ../../docs_src/path_params_numeric_validations/tutorial002_py310.py hl[7] *}
 
-## 必要に応じてパラメータを並び替えるトリック
+ただし、`Annotated`を使う場合はこの問題は起きないことを覚えておいてください。`Query()`や`Path()`に関数パラメータのデフォルト値を使わないためです。
 
-クエリパラメータ`q`を`Query`やデフォルト値なしで宣言し、パスパラメータ`item_id`を`Path`を用いて宣言し、それらを別の順番に並びたい場合、Pythonには少し特殊な構文が用意されています。
+{* ../../docs_src/path_params_numeric_validations/tutorial002_an_py310.py *}
 
-関数の最初のパラメータとして`*`を渡します。
+## 必要に応じてパラメータを並び替えるトリック { #order-the-parameters-as-you-need-tricks }
 
-Pythonはその`*`で何かをすることはありませんが、それ以降のすべてのパラメータがキーワード引数（キーと値のペア）として呼ばれるべきものであると知っているでしょう。それは<abbr title="From: K-ey W-ord Arg-uments"><code>kwargs</code></abbr>としても知られています。たとえデフォルト値がなくても。
+/// tip | 豆知識
 
-```Python hl_lines="8"
-{!../../../docs_src/path_params_numeric_validations/tutorial003.py!}
-```
-
-## 数値の検証: 以上
-
-`Query`と`Path`（、そして後述する他のもの）を用いて、文字列の制約を宣言することができますが、数値の制約も同様に宣言できます。
-
-ここで、`ge=1`の場合、`item_id`は`1`「より大きい`g`か、同じ`e`」整数でなれけばなりません。
-
-```Python hl_lines="8"
-{!../../../docs_src/path_params_numeric_validations/tutorial004.py!}
-```
-
-## 数値の検証: より大きいと小なりイコール
-
-以下も同様です:
-
-* `gt`: より大きい（`g`reater `t`han）
-* `le`: 小なりイコール（`l`ess than or `e`qual）
-
-```Python hl_lines="9"
-{!../../../docs_src/path_params_numeric_validations/tutorial005.py!}
-```
-
-## 数値の検証: 浮動小数点、 大なり小なり
-
-数値のバリデーションは`float`の値に対しても有効です。
-
-ここで重要になってくるのは<abbr title="より大きい"><code>gt</code></abbr>だけでなく<abbr title="以下"><code>ge</code></abbr>も宣言できることです。これと同様に、例えば、値が`1`より小さくても`0`より大きくなければならないことを要求することができます。
-
-したがって、`0.5`は有効な値ですが、`0.0`や`0`はそうではありません。
-
-これは<abbr title="未満"><code>lt</code></abbr>も同じです。
-
-```Python hl_lines="11"
-{!../../../docs_src/path_params_numeric_validations/tutorial006.py!}
-```
-
-## まとめ
-
-`Query`と`Path`（そしてまだ見たことない他のもの）では、[クエリパラメータと文字列の検証](query-params-str-validations.md){.internal-link target=_blank}と同じようにメタデータと文字列の検証を宣言することができます。
-
-また、数値のバリデーションを宣言することもできます:
-
-* `gt`: より大きい（`g`reater `t`han）
-* `ge`: 以上（`g`reater than or `e`qual）
-* `lt`: より小さい（`l`ess `t`han）
-* `le`: 以下（`l`ess than or `e`qual）
-
-/// info | "情報"
-
-`Query`、`Path`などは後に共通の`Param`クラスのサブクラスを見ることになります。（使う必要はありません）
-
-そして、それらすべては、これまで見てきた追加のバリデーションとメタデータと同じパラメータを共有しています。
+`Annotated`を使う場合、これはおそらくそれほど重要でも必要でもありません。
 
 ///
 
-/// note | "技術詳細"
+これは**小さなトリック**で、便利な場合がありますが、頻繁に必要になることはありません。
 
-`fastapi`から`Query`、`Path`などをインポートすると、これらは実際には関数です。
+次のことをしたい場合:
+
+* `q`クエリパラメータを`Query`もデフォルト値もなしで宣言する
+* パスパラメータ`item_id`を`Path`を使って宣言する
+* それらを別の順番にする
+* `Annotated`を使わない
+
+...Pythonにはそのための少し特殊な構文があります。
+
+関数の最初のパラメータとして`*`を渡します。
+
+Pythonはその`*`で何かをすることはありませんが、それ以降のすべてのパラメータがキーワード引数（キーと値のペア）として呼ばれるべきものであると知っているでしょう。それは<abbr title="From: K-ey W-ord Arg-uments - キーワード引数"><code>kwargs</code></abbr>としても知られています。たとえデフォルト値がなくても。
+
+{* ../../docs_src/path_params_numeric_validations/tutorial003_py310.py hl[7] *}
+
+### `Annotated`のほうがよい { #better-with-annotated }
+
+`Annotated`を使う場合は、関数パラメータのデフォルト値を使わないため、この問題は起きず、おそらく`*`を使う必要もありません。
+
+{* ../../docs_src/path_params_numeric_validations/tutorial003_an_py310.py hl[10] *}
+
+## 数値の検証: 以上 { #number-validations-greater-than-or-equal }
+
+`Query`と`Path`（、そして後述する他のもの）を用いて、数値の制約を宣言できます。
+
+ここで、`ge=1`の場合、`item_id`は`1`「より大きい`g`か、同じ`e`」整数でなければなりません。
+
+{* ../../docs_src/path_params_numeric_validations/tutorial004_an_py310.py hl[10] *}
+
+## 数値の検証: より大きいと小なりイコール { #number-validations-greater-than-and-less-than-or-equal }
+
+以下も同様です:
+
+* `gt`: `g`reater `t`han
+* `le`: `l`ess than or `e`qual
+
+{* ../../docs_src/path_params_numeric_validations/tutorial005_an_py310.py hl[10] *}
+
+## 数値の検証: 浮動小数点、 大なり小なり { #number-validations-floats-greater-than-and-less-than }
+
+数値のバリデーションは`float`の値に対しても有効です。
+
+ここで重要になってくるのは<abbr title="greater than – より大きい"><code>gt</code></abbr>だけでなく<abbr title="greater than or equal – 以上"><code>ge</code></abbr>も宣言できることです。これと同様に、例えば、値が`1`より小さくても`0`より大きくなければならないことを要求することができます。
+
+したがって、`0.5`は有効な値ですが、`0.0`や`0`はそうではありません。
+
+これは<abbr title="less than – より小さい"><code>lt</code></abbr>も同じです。
+
+{* ../../docs_src/path_params_numeric_validations/tutorial006_an_py310.py hl[13] *}
+
+## まとめ { #recap }
+
+`Query`と`Path`（そしてまだ見たことない他のもの）では、[クエリパラメータと文字列の検証](query-params-str-validations.md)と同じようにメタデータと文字列の検証を宣言することができます。
+
+また、数値のバリデーションを宣言することもできます:
+
+* `gt`: `g`reater `t`han
+* `ge`: `g`reater than or `e`qual
+* `lt`: `l`ess `t`han
+* `le`: `l`ess than or `e`qual
+
+/// note | 備考
+
+`Query`、`Path`、および後で見る他のクラスは、共通の`Param`クラスのサブクラスです。
+
+それらはすべて、これまで見てきた追加のバリデーションとメタデータの同じパラメータを共有しています。
+
+///
+
+/// note | 技術詳細
+
+`fastapi`から`Query`、`Path`などをインポートすると、これらは実際には関数です。
 
 呼び出されると、同じ名前のクラスのインスタンスを返します。
 

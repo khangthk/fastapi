@@ -1,38 +1,47 @@
+import importlib
+from types import ModuleType
+
 import pytest
 from fastapi.exceptions import FastAPIError
 from fastapi.testclient import TestClient
 
 
-@pytest.fixture(name="client")
-def get_client():
-    from docs_src.dependencies.tutorial008c import app
+@pytest.fixture(
+    name="mod",
+    params=[
+        pytest.param("tutorial008c_py310"),
+        pytest.param("tutorial008c_an_py310"),
+    ],
+)
+def get_mod(request: pytest.FixtureRequest):
+    mod = importlib.import_module(f"docs_src.dependencies.{request.param}")
 
-    client = TestClient(app)
-    return client
+    return mod
 
 
-def test_get_no_item(client: TestClient):
+def test_get_no_item(mod: ModuleType):
+    client = TestClient(mod.app)
     response = client.get("/items/foo")
     assert response.status_code == 404, response.text
     assert response.json() == {"detail": "Item not found, there's only a plumbus here"}
 
 
-def test_get(client: TestClient):
+def test_get(mod: ModuleType):
+    client = TestClient(mod.app)
     response = client.get("/items/plumbus")
     assert response.status_code == 200, response.text
     assert response.json() == "plumbus"
 
 
-def test_fastapi_error(client: TestClient):
+def test_fastapi_error(mod: ModuleType):
+    client = TestClient(mod.app)
     with pytest.raises(FastAPIError) as exc_info:
         client.get("/items/portal-gun")
-    assert "No response object was returned" in exc_info.value.args[0]
+    assert "raising an exception and a dependency with yield" in exc_info.value.args[0]
 
 
-def test_internal_server_error():
-    from docs_src.dependencies.tutorial008c import app
-
-    client = TestClient(app, raise_server_exceptions=False)
+def test_internal_server_error(mod: ModuleType):
+    client = TestClient(mod.app, raise_server_exceptions=False)
     response = client.get("/items/portal-gun")
     assert response.status_code == 500, response.text
     assert response.text == "Internal Server Error"

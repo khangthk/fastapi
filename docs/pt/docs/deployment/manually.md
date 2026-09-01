@@ -1,51 +1,39 @@
-# Execute um Servidor Manualmente
+# Execute um Servidor Manualmente { #run-a-server-manually }
 
-## Utilize o comando `fastapi run`
+## Utilize o comando `fastapi run` { #use-the-fastapi-run-command }
 
 Em resumo, utilize o comando `fastapi run` para inicializar sua aplicação FastAPI:
 
 <div class="termy">
 
 ```console
-$ <font color="#4E9A06">fastapi</font> run <u style="text-decoration-style:single">main.py</u>
-<font color="#3465A4">INFO    </font> Using path <font color="#3465A4">main.py</font>
-<font color="#3465A4">INFO    </font> Resolved absolute path <font color="#75507B">/home/user/code/awesomeapp/</font><font color="#AD7FA8">main.py</font>
-<font color="#3465A4">INFO    </font> Searching for package file structure from directories with <font color="#3465A4">__init__.py</font> files
-<font color="#3465A4">INFO    </font> Importing from <font color="#75507B">/home/user/code/</font><font color="#AD7FA8">awesomeapp</font>
+$ <font color="#4E9A06">fastapi</font> run <u style="text-decoration-style:solid">main.py</u>
 
- ╭─ <font color="#8AE234"><b>Python module file</b></font> ─╮
- │                      │
- │  🐍 main.py          │
- │                      │
- ╰──────────────────────╯
+  <span style="background-color:#009485"><font color="#D3D7CF"> FastAPI </font></span>  Starting production server 🚀
 
-<font color="#3465A4">INFO    </font> Importing module <font color="#4E9A06">main</font>
-<font color="#3465A4">INFO    </font> Found importable FastAPI app
+             Searching for package file structure from directories
+             with <font color="#3465A4">__init__.py</font> files
+             Importing from <font color="#75507B">/home/user/code/</font><font color="#AD7FA8">awesomeapp</font>
 
- ╭─ <font color="#8AE234"><b>Importable FastAPI app</b></font> ─╮
- │                          │
- │  <span style="background-color:#272822"><font color="#FF4689">from</font></span><span style="background-color:#272822"><font color="#F8F8F2"> main </font></span><span style="background-color:#272822"><font color="#FF4689">import</font></span><span style="background-color:#272822"><font color="#F8F8F2"> app</font></span><span style="background-color:#272822">  </span>  │
- │                          │
- ╰──────────────────────────╯
+   <span style="background-color:#007166"><font color="#D3D7CF"> module </font></span>  🐍 main.py
 
-<font color="#3465A4">INFO    </font> Using import string <font color="#8AE234"><b>main:app</b></font>
+     <span style="background-color:#007166"><font color="#D3D7CF"> code </font></span>  Importing the FastAPI app object from the module with
+             the following code:
 
- <font color="#4E9A06">╭─────────── FastAPI CLI - Production mode ───────────╮</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">│  Serving at: http://0.0.0.0:8000                    │</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">│  API docs: http://0.0.0.0:8000/docs                 │</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">│  Running in production mode, for development use:   │</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">│  </font><font color="#8AE234"><b>fastapi dev</b></font><font color="#4E9A06">                                        │</font>
- <font color="#4E9A06">│                                                     │</font>
- <font color="#4E9A06">╰─────────────────────────────────────────────────────╯</font>
+             <u style="text-decoration-style:solid">from </u><u style="text-decoration-style:solid"><b>main</b></u><u style="text-decoration-style:solid"> import </u><u style="text-decoration-style:solid"><b>app</b></u>
 
-<font color="#4E9A06">INFO</font>:     Started server process [<font color="#06989A">2306215</font>]
-<font color="#4E9A06">INFO</font>:     Waiting for application startup.
-<font color="#4E9A06">INFO</font>:     Application startup complete.
-<font color="#4E9A06">INFO</font>:     Uvicorn running on <b>http://0.0.0.0:8000</b> (Press CTRL+C to quit)
+      <span style="background-color:#007166"><font color="#D3D7CF"> app </font></span>  Using import string: <font color="#3465A4">main:app</font>
+
+   <span style="background-color:#007166"><font color="#D3D7CF"> server </font></span>  Server started at <font color="#729FCF"><u style="text-decoration-style:solid">http://0.0.0.0:8000</u></font>
+   <span style="background-color:#007166"><font color="#D3D7CF"> server </font></span>  Documentation at <font color="#729FCF"><u style="text-decoration-style:solid">http://0.0.0.0:8000/docs</u></font>
+
+             Logs:
+
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started server process <b>[</b><font color="#34E2E2"><b>2306215</b></font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Waiting for application startup.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Application startup complete.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Uvicorn running on <font color="#729FCF"><u style="text-decoration-style:solid">http://0.0.0.0:8000</u></font> <b>(</b>Press CTRL+C
+             to quit<b>)</b>
 ```
 
 </div>
@@ -54,23 +42,22 @@ Isto deve funcionar para a maioria dos casos. 😎
 
 Você pode utilizar esse comando, por exemplo, para iniciar sua aplicação **FastAPI** em um contêiner, em um servidor, etc.
 
-## Servidores ASGI
+## Servidores ASGI { #asgi-servers }
 
 Vamos nos aprofundar um pouco mais em detalhes.
 
-FastAPI utiliza um padrão para construir frameworks e servidores web em Python chamado <abbr title="Asynchronous Server Gateway Interface">ASGI</abbr>. FastAPI é um framework web ASGI.
+FastAPI utiliza um padrão para construir frameworks e servidores web em Python chamado <abbr title="Asynchronous Server Gateway Interface - Interface de Gateway de Servidor Assíncrono">ASGI</abbr>. FastAPI é um framework web ASGI.
 
-A principal coisa que você precisa para executar uma aplicação **FastAPI** (ou qualquer outra aplicação ASGI) em uma máquina de servidor remoto é um programa de servidor ASGI como o **Uvicorn**, que é o que vem por padrão no comando `fastapi`.
+A principal coisa que você precisa para executar uma aplicação **FastAPI** (ou qualquer outra aplicação ASGI) em uma máquina de servidor remoto é um programa de servidor ASGI como o **Uvicorn**, este é o que vem por padrão no comando `fastapi`.
 
 Existem diversas alternativas, incluindo:
 
-* <a href="https://www.uvicorn.org/" class="external-link" target="_blank">Uvicorn</a>: um servidor ASGI de alta performance.
-* <a href="https://hypercorn.readthedocs.io/" class="external-link" target="_blank">Hypercorn</a>: um servidor ASGI compátivel com HTTP/2, Trio e outros recursos.
-* <a href="https://github.com/django/daphne" class="external-link" target="_blank">Daphne</a>: servidor ASGI construído para Django Channels.
-* <a href="https://github.com/emmett-framework/granian" class="external-link" target="_blank">Granian</a>: um servidor HTTP Rust para aplicações Python.
-* <a href="https://unit.nginx.org/howto/fastapi/" class="external-link" target="_blank">NGINX Unit</a>: NGINX Unit é um runtime de aplicação web leve e versátil.
+* [Uvicorn](https://uvicorn.dev): um servidor ASGI de alta performance.
+* [Hypercorn](https://hypercorn.readthedocs.io/): um servidor ASGI compatível com HTTP/2 e Trio, entre outras funcionalidades.
+* [Daphne](https://github.com/django/daphne): o servidor ASGI construído para Django Channels.
+* [Granian](https://github.com/emmett-framework/granian): um servidor HTTP Rust para aplicações Python.
 
-## Máquina Servidora e Programa Servidor
+## Máquina Servidora e Programa Servidor { #server-machine-and-server-program }
 
 Existe um pequeno detalhe sobre estes nomes para se manter em mente. 💡
 
@@ -80,20 +67,20 @@ Apenas tenha em mente que quando você ler "servidor" em geral, isso pode se ref
 
 Quando se refere à máquina remota, é comum chamá-la de **servidor**, mas também de **máquina**, **VM** (máquina virtual), **nó**. Todos esses termos se referem a algum tipo de máquina remota, normalmente executando Linux, onde você executa programas.
 
-## Instale o Programa Servidor
+## Instale o Programa Servidor { #install-the-server-program }
 
 Quando você instala o FastAPI, ele vem com um servidor de produção, o Uvicorn, e você pode iniciá-lo com o comando `fastapi run`.
 
 Mas você também pode instalar um servidor ASGI manualmente.
 
-Certifique-se de criar um [ambiente virtual](../virtual-environments.md){.internal-link target=_blank}, ativá-lo e, em seguida, você pode instalar a aplicação do servidor.
+Adicione a aplicação do servidor ao seu projeto.
 
 Por exemplo, para instalar o Uvicorn:
 
 <div class="termy">
 
 ```console
-$ pip install "uvicorn[standard]"
+$ uv add "uvicorn[standard]"
 
 ---> 100%
 ```
@@ -102,31 +89,31 @@ $ pip install "uvicorn[standard]"
 
 Um processo semelhante se aplicaria a qualquer outro programa de servidor ASGI.
 
-/// tip | "Dica"
+/// tip | Dica
 
 Adicionando o `standard`, o Uvicorn instalará e usará algumas dependências extras recomendadas.
 
 Isso inclui o `uvloop`, a substituição de alto desempenho para `asyncio`, que fornece um grande aumento de desempenho de concorrência.
 
-Quando você instala o FastAPI com algo como `pip install "fastapi[standard]"`, você já obtém `uvicorn[standard]` também.
+Quando você adiciona o FastAPI com algo como `uv add "fastapi[standard]"`, você já obtém `uvicorn[standard]` também.
 
 ///
 
-## Execute o Programa Servidor
+## Execute o Programa Servidor { #run-the-server-program }
 
 Se você instalou um servidor ASGI manualmente, normalmente precisará passar uma string de importação em um formato especial para que ele importe sua aplicação FastAPI:
 
 <div class="termy">
 
 ```console
-$ uvicorn main:app --host 0.0.0.0 --port 80
+$ uv run uvicorn main:app --host 0.0.0.0 --port 80
 
 <span style="color: green;">INFO</span>:     Uvicorn running on http://0.0.0.0:80 (Press CTRL+C to quit)
 ```
 
 </div>
 
-/// note | "Nota"
+/// note | Nota
 
 O comando `uvicorn main:app` refere-se a:
 
@@ -143,17 +130,17 @@ from main import app
 
 Cada programa de servidor ASGI alternativo teria um comando semelhante, você pode ler mais na documentação respectiva.
 
-/// warning | "Aviso"
+/// warning | Atenção
 
 Uvicorn e outros servidores suportam a opção `--reload` que é útil durante o desenvolvimento.
 
 A opção `--reload` consome muito mais recursos, é mais instável, etc.
 
-Ela ajuda muito durante o **desenvolvimento**, mas você **não deve** usá-la em **produção**.
+Ela ajuda muito durante o **desenvolvimento**, mas você **não deveria** usá-la em **produção**.
 
 ///
 
-## Conceitos de Implantação
+## Conceitos de Implantação { #deployment-concepts }
 
 Esses exemplos executam o programa do servidor (por exemplo, Uvicorn), iniciando **um único processo**, ouvindo em todos os IPs (`0.0.0.0`) em uma porta predefinida (por exemplo, `80`).
 

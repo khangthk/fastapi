@@ -1,135 +1,45 @@
-# Çerez (Cookie) Parametreleri
+# Cookie (Çerez) Parametreleri { #cookie-parameters }
 
-`Query` (Sorgu) ve `Path` (Yol) parametrelerini tanımladığınız şekilde çerez parametreleri tanımlayabilirsiniz.
+`Query` ve `Path` parametrelerini tanımladığınız şekilde Cookie parametreleri tanımlayabilirsiniz.
 
-## Import `Cookie`
+## `Cookie`'yi Import Edin { #import-cookie }
 
-Öncelikle, `Cookie`'yi projenize dahil edin:
+Öncelikle, `Cookie`'yi import edin:
 
-//// tab | Python 3.10+
+{* ../../docs_src/cookie_params/tutorial001_an_py310.py hl[3] *}
 
-```Python hl_lines="3"
-{!> ../../../docs_src/cookie_params/tutorial001_an_py310.py!}
-```
+## `Cookie` Parametrelerini Tanımlayın { #declare-cookie-parameters }
 
-////
+Ardından, `Path` ve `Query` ile aynı yapıyı kullanarak Cookie parametrelerini tanımlayın.
 
-//// tab | Python 3.9+
+Varsayılan değeri ve tüm ekstra doğrulama veya annotation parametrelerini tanımlayabilirsiniz:
 
-```Python hl_lines="3"
-{!> ../../../docs_src/cookie_params/tutorial001_an_py39.py!}
-```
+{* ../../docs_src/cookie_params/tutorial001_an_py310.py hl[9] *}
 
-////
+/// note | Teknik Detaylar
 
-//// tab | Python 3.8+
+`Cookie`, `Path` ve `Query`'nin "kardeş" sınıfıdır. O da aynı ortak `Param` sınıfından miras alır.
 
-```Python hl_lines="3"
-{!> ../../../docs_src/cookie_params/tutorial001_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip | "İpucu"
-
-Mümkün mertebe 'Annotated' sınıfını kullanmaya çalışın.
+Ancak `fastapi`'dan `Query`, `Path`, `Cookie` ve diğerlerini import ettiğinizde, bunlar aslında özel sınıflar döndüren fonksiyonlardır, bunu unutmayın.
 
 ///
 
-```Python hl_lines="1"
-{!> ../../../docs_src/cookie_params/tutorial001_py310.py!}
-```
+/// note | Not
 
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip | "İpucu"
-
-Mümkün mertebe 'Annotated' sınıfını kullanmaya çalışın.
+Cookie'leri tanımlamak için `Cookie` kullanmanız gerekir, aksi halde parametreler query parametreleri olarak yorumlanır.
 
 ///
 
-```Python hl_lines="3"
-{!> ../../../docs_src/cookie_params/tutorial001.py!}
-```
+/// note | Not
 
-////
+**Tarayıcılar cookie'leri** özel şekillerde ve arka planda işlediği için, **JavaScript**'in onlara dokunmasına kolayca izin **vermezler**.
 
-## `Cookie` Parametrelerini Tanımlayın
+`/docs` adresindeki **API docs UI**'a giderseniz, *path operation*'larınız için cookie'lerin **dokümantasyonunu** görebilirsiniz.
 
-Çerez parametrelerini `Path` veya `Query` tanımlaması yapar gibi tanımlayın.
-
-İlk değer varsayılan değerdir; tüm ekstra doğrulama veya belirteç parametrelerini kullanabilirsiniz:
-
-//// tab | Python 3.10+
-
-```Python hl_lines="9"
-{!> ../../../docs_src/cookie_params/tutorial001_an_py310.py!}
-```
-
-////
-
-//// tab | Python 3.9+
-
-```Python hl_lines="9"
-{!> ../../../docs_src/cookie_params/tutorial001_an_py39.py!}
-```
-
-////
-
-//// tab | Python 3.8+
-
-```Python hl_lines="10"
-{!> ../../../docs_src/cookie_params/tutorial001_an.py!}
-```
-
-////
-
-//// tab | Python 3.10+ non-Annotated
-
-/// tip | "İpucu"
-
-Mümkün mertebe 'Annotated' sınıfını kullanmaya çalışın.
+Ancak **veriyi doldurup** "Execute" düğmesine tıklasanız bile, docs UI **JavaScript** ile çalıştığı için cookie'ler gönderilmez ve herhangi bir değer yazmamışsınız gibi bir **hata** mesajı görürsünüz.
 
 ///
 
-```Python hl_lines="7"
-{!> ../../../docs_src/cookie_params/tutorial001_py310.py!}
-```
+## Özet { #recap }
 
-////
-
-//// tab | Python 3.8+ non-Annotated
-
-/// tip | "İpucu"
-
-Mümkün mertebe 'Annotated' sınıfını kullanmaya çalışın.
-
-///
-
-```Python hl_lines="9"
-{!> ../../../docs_src/cookie_params/tutorial001.py!}
-```
-
-////
-
-/// note | "Teknik Detaylar"
-
-`Cookie` sınıfı `Path` ve `Query` sınıflarının kardeşidir. Diğerleri gibi `Param` sınıfını miras alan bir sınıftır.
-
-Ancak `fastapi`'dan projenize dahil ettiğiniz `Query`, `Path`, `Cookie` ve diğerleri aslında özel sınıflar döndüren birer fonksiyondur.
-
-///
-
-/// info | "Bilgi"
-
-Çerez tanımlamak için `Cookie` sınıfını kullanmanız gerekmektedir, aksi taktirde parametreler sorgu parametreleri olarak yorumlanır.
-
-///
-
-## Özet
-
-Çerez tanımlamalarını `Cookie` sınıfını kullanarak `Query` ve `Path` tanımlar gibi tanımlayın.
+`Query` ve `Path` ile aynı ortak deseni kullanarak, cookie'leri `Cookie` ile tanımlayın.

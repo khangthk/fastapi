@@ -1,4 +1,4 @@
-# Tutorial - User Guide
+# Tutorial - User Guide { #tutorial-user-guide }
 
 This tutorial shows you how to use **FastAPI** with most of its features, step by step.
 
@@ -6,57 +6,48 @@ Each section gradually builds on the previous ones, but it's structured to separ
 
 It is also built to work as a future reference so you can come back and see exactly what you need.
 
-## Run the code
+## Run the code { #run-the-code }
 
 All the code blocks can be copied and used directly (they are actually tested Python files).
 
-To run any of the examples, copy the code to a file `main.py`, and start `fastapi dev` with:
+To run any of the examples, copy the code to a file `main.py`, and start `fastapi dev` with `uv run`:
 
 <div class="termy">
 
 ```console
-$ <font color="#4E9A06">fastapi</font> dev <u style="text-decoration-style:single">main.py</u>
-<font color="#3465A4">INFO    </font> Using path <font color="#3465A4">main.py</font>
-<font color="#3465A4">INFO    </font> Resolved absolute path <font color="#75507B">/home/user/code/awesomeapp/</font><font color="#AD7FA8">main.py</font>
-<font color="#3465A4">INFO    </font> Searching for package file structure from directories with <font color="#3465A4">__init__.py</font> files
-<font color="#3465A4">INFO    </font> Importing from <font color="#75507B">/home/user/code/</font><font color="#AD7FA8">awesomeapp</font>
+$ <font color="#4E9A06">uv run fastapi</font> dev
 
- ╭─ <font color="#8AE234"><b>Python module file</b></font> ─╮
- │                      │
- │  🐍 main.py          │
- │                      │
- ╰──────────────────────╯
+  <span style="background-color:#009485"><font color="#D3D7CF"> FastAPI </font></span>  Starting development server 🚀
 
-<font color="#3465A4">INFO    </font> Importing module <font color="#4E9A06">main</font>
-<font color="#3465A4">INFO    </font> Found importable FastAPI app
+             Searching for package file structure from directories
+             with <font color="#3465A4">__init__.py</font> files
+             Importing from <font color="#75507B">/home/user/code/</font><font color="#AD7FA8">awesomeapp</font>
 
- ╭─ <font color="#8AE234"><b>Importable FastAPI app</b></font> ─╮
- │                          │
- │  <span style="background-color:#272822"><font color="#FF4689">from</font></span><span style="background-color:#272822"><font color="#F8F8F2"> main </font></span><span style="background-color:#272822"><font color="#FF4689">import</font></span><span style="background-color:#272822"><font color="#F8F8F2"> app</font></span><span style="background-color:#272822">  </span>  │
- │                          │
- ╰──────────────────────────╯
+   <span style="background-color:#007166"><font color="#D3D7CF"> module </font></span>  🐍 main.py
 
-<font color="#3465A4">INFO    </font> Using import string <font color="#8AE234"><b>main:app</b></font>
+     <span style="background-color:#007166"><font color="#D3D7CF"> code </font></span>  Importing the FastAPI app object from the module with
+             the following code:
 
- <span style="background-color:#C4A000"><font color="#2E3436">╭────────── FastAPI CLI - Development mode ───────────╮</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│  Serving at: http://127.0.0.1:8000                  │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│  API docs: http://127.0.0.1:8000/docs               │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│  Running in development mode, for production use:   │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│  </font></span><span style="background-color:#C4A000"><font color="#555753"><b>fastapi run</b></font></span><span style="background-color:#C4A000"><font color="#2E3436">                                        │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">│                                                     │</font></span>
- <span style="background-color:#C4A000"><font color="#2E3436">╰─────────────────────────────────────────────────────╯</font></span>
+             <u style="text-decoration-style:solid">from </u><u style="text-decoration-style:solid"><b>main</b></u><u style="text-decoration-style:solid"> import </u><u style="text-decoration-style:solid"><b>app</b></u>
 
-<font color="#4E9A06">INFO</font>:     Will watch for changes in these directories: [&apos;/home/user/code/awesomeapp&apos;]
-<font color="#4E9A06">INFO</font>:     Uvicorn running on <b>http://127.0.0.1:8000</b> (Press CTRL+C to quit)
-<font color="#4E9A06">INFO</font>:     Started reloader process [<font color="#34E2E2"><b>2265862</b></font>] using <font color="#34E2E2"><b>WatchFiles</b></font>
-<font color="#4E9A06">INFO</font>:     Started server process [<font color="#06989A">2265873</font>]
-<font color="#4E9A06">INFO</font>:     Waiting for application startup.
-<font color="#4E9A06">INFO</font>:     Application startup complete.
-</pre>
+      <span style="background-color:#007166"><font color="#D3D7CF"> app </font></span>  Using import string: <font color="#3465A4">main:app</font>
+
+   <span style="background-color:#007166"><font color="#D3D7CF"> server </font></span>  Server started at <font color="#729FCF"><u style="text-decoration-style:solid">http://127.0.0.1:8000</u></font>
+   <span style="background-color:#007166"><font color="#D3D7CF"> server </font></span>  Documentation at <font color="#729FCF"><u style="text-decoration-style:solid">http://127.0.0.1:8000/docs</u></font>
+
+      <span style="background-color:#007166"><font color="#D3D7CF"> tip </font></span>  Running in development mode, for production use:
+             <b>fastapi run</b>
+
+             Logs:
+
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Will watch for changes in these directories:
+             <b>[</b><font color="#4E9A06">&apos;/home/user/code/awesomeapp&apos;</font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Uvicorn running on <font color="#729FCF"><u style="text-decoration-style:solid">http://127.0.0.1:8000</u></font> <b>(</b>Press CTRL+C
+             to quit<b>)</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started reloader process <b>[</b><font color="#34E2E2"><b>383138</b></font><b>]</b> using WatchFiles
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Started server process <b>[</b><font color="#34E2E2"><b>383153</b></font><b>]</b>
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Waiting for application startup.
+     <span style="background-color:#007166"><font color="#D3D7CF"> INFO </font></span>  Application startup complete.
 ```
 
 </div>
@@ -67,33 +58,81 @@ Using it in your editor is what really shows you the benefits of FastAPI, seeing
 
 ---
 
-## Install FastAPI
+## Install FastAPI { #install-fastapi }
 
-The first step is to install FastAPI.
+The first step is to set up your project and add FastAPI.
 
-Make sure you create a [virtual environment](../virtual-environments.md){.internal-link target=_blank}, activate it, and then **install FastAPI**:
+Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/), then create a project and add FastAPI:
 
 <div class="termy">
 
 ```console
-$ pip install "fastapi[standard]"
+$ uv init awesome-project --bare
+$ cd awesome-project
+$ uv add "fastapi[standard]"
 
 ---> 100%
 ```
 
 </div>
 
-/// note
+`uv add` creates the project's virtual environment in `.venv`, adds FastAPI to `pyproject.toml`, and creates `uv.lock` so the same package versions can be installed later.
 
-When you install with `pip install "fastapi[standard]"` it comes with some default optional standard dependencies.
+/// details | What these commands do
 
-If you don't want to have those optional dependencies, you can instead install `pip install fastapi`.
+* `uv init`: create a new Python project.
+* `awesome-project`: create the project in a new directory with this name.
+* `--bare`: create only the minimal `pyproject.toml` file, without generating a sample `main.py`, `README.md`, or other files. You will create the application files yourself in the next steps of this tutorial.
+
+Then `cd awesome-project` enters the new project directory before adding FastAPI.
+
+`uv` will use a compatible Python version already installed on your system, or download one if needed.
+
+When you run `uv add`, it selects compatible versions of FastAPI and all the packages FastAPI depends on. It records the exact versions in `uv.lock`, making it possible to install the same package versions later on another computer or when deploying the application.
+
+Creating or updating this file is called [**locking** the project dependencies](https://docs.astral.sh/uv/concepts/projects/sync/). `uv` does this automatically when you add a package.
 
 ///
 
-## Advanced User Guide
+/// details | FastAPI installation options
 
-There is also an **Advanced User Guide** that you can read later after this **Tutorial - User guide**.
+When you install with `uv add "fastapi[standard]"` it comes with some default optional standard dependencies, including `fastapi-cloud-cli`, which allows you to deploy to [FastAPI Cloud](https://fastapicloud.com).
+
+If you don't want to have those optional dependencies, you can instead install `uv add fastapi`.
+
+If you want to install the standard dependencies but without the `fastapi-cloud-cli`, you can install with `uv add "fastapi[standard-no-fastapi-cloud-cli]"`.
+
+///
+
+/// details | Using `pip` instead
+
+If you prefer to manage a virtual environment and packages manually, create and activate a virtual environment and then install FastAPI with `pip install "fastapi[standard]"`.
+
+Read the [Virtual Environments guide](https://tiangolo.com/guides/virtual-environments/) for the detailed steps.
+
+///
+
+## AI Agent Skills { #ai-agent-skills }
+
+FastAPI includes an official skill for AI coding agents. It is bundled with the package, so its guidance stays aligned with the version of FastAPI installed in your project and updates when you update FastAPI.
+
+After installing FastAPI in your project, you can install the skill with <a href="https://library-skills.io">Library Skills</a>:
+
+```bash
+uvx library-skills
+```
+
+/// note
+
+`uvx` is an alias for `uv tool run`. It runs Library Skills in a temporary, isolated environment while Library Skills scans the packages installed in your project.
+
+///
+
+The skill is compatible with Codex, Claude Code, Cursor, GitHub Copilot, Gemini CLI, Pi, OpenCode, and most other coding agents. For Claude Code, select `.claude/skills` when asked where to install the skill.
+
+## Advanced User Guide { #advanced-user-guide }
+
+There is also an **Advanced User Guide** that you can read later after this **Tutorial - User Guide**.
 
 The **Advanced User Guide** builds on this one, uses the same concepts, and teaches you some extra features.
 
